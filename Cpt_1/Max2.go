@@ -5,7 +5,6 @@ import "fmt"
 func main() {
 	data := []int{7, 2, 5, 3, 1, 8, 9, 6, 4}
 	var x1, x2 int
-	//x1, x2 = new(int), new(int)
 	max2(data, 0, 9, &x1, &x2)
 	fmt.Println("x1, x2 =", x1, x2)
 	fmt.Println("max 2 data:", data[x1], data[x2])
@@ -14,7 +13,6 @@ func main() {
 func max2(data []int, lo int, hi int, x1 *int, x2 *int) {
 	switch {
 	case lo+2 == hi:
-		//x1, x2 = new(int), new(int)
 		if data[lo] > data[lo+1] {
 			*x1, *x2 = lo, lo+1
 		} else {
@@ -22,7 +20,6 @@ func max2(data []int, lo int, hi int, x1 *int, x2 *int) {
 		}
 		return
 	case lo+3 == hi:
-		//x1, x2 = new(int), new(int)
 		if data[lo] > data[lo+1] {
 			*x1, *x2 = lo, lo+1
 		} else {
@@ -44,7 +41,6 @@ func max2(data []int, lo int, hi int, x1 *int, x2 *int) {
 	fmt.Printf("right [%d, %d): x1r=%d, x2r=%d\n", mi, hi, x1r, x2r)
 
 	fmt.Printf("x1l = %d, x1r = %d, x2l = %d, x2r = %d, x1 = %d, x2 = %d\n", x1l, x1r, x2l, x2r, *x1, *x2)
-	fmt.Println("------ after combine l & r ------")
 	if data[x1l] > data[x1r] {
 		*x1 = x1l
 		if data[x2l] > data[x1r] {
@@ -60,6 +56,7 @@ func max2(data []int, lo int, hi int, x1 *int, x2 *int) {
 			*x2 = x2r
 		}
 	}
+	fmt.Println("------ after combine l & r ------")
 	fmt.Printf("x1l = %d, x1r = %d, x2l = %d, x2r = %d, x1 = %d, x2 = %d\n", x1l, x1r, x2l, x2r, *x1, *x2)
 	fmt.Println("==== end ====")
 }
