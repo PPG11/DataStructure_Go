@@ -1,5 +1,15 @@
 package main
 
+/*
+var x1 *int
+var x2 int
+x1 = &x2
+*x1 = x2
+
+is totally different !!!!
+
+especially when they are in the sub-function
+*/
 import "fmt"
 
 func main() {
