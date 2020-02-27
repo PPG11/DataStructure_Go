@@ -16,7 +16,8 @@ func bubbleSort(data []int) {
 		isSorted = true
 		for i := 1; i < n; i++ {
 			if data[i] < data[i-1] {
-				swap(&data[i], &data[i-1])
+				//swap(&data[i], &data[i-1])
+				data[i], data[i-1] = data[i-1], data[i]
 				isSorted = false
 				fmt.Println(data)
 				fmt.Println("---")
@@ -27,7 +28,7 @@ func bubbleSort(data []int) {
 	//fmt.Println(data)
 }
 
-func swap(i *int, j *int) {
-	fmt.Println("swap", *i, *j)
-	*i, *j = *j, *i
-}
+//func swap(i *int, j *int) {
+//	fmt.Println("swap", *i, *j)
+//	*i, *j = *j, *i
+//}
