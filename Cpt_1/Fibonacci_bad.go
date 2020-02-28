@@ -5,13 +5,13 @@ import "fmt"
 func main() {
 	n := 24
 	for gen := 0; gen < n; gen++ {
-		f := fib(gen)
+		f := fib_bad(gen)
 		fmt.Println("gen =", gen, ",\tfib =", f)
 	}
 
 }
 
-func fib(n int) int {
+func fib_bad(n int) int {
 	switch {
 	case n < 2:
 		return n
