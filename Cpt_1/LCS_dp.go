@@ -6,8 +6,8 @@ import "fmt"
 var LCSMatrix [][]int
 
 func main() {
-	str1 := "didactically"
-	str2 := "advantage"
+	str1 := "program"
+	str2 := "algorithm"
 	n1, n2 := len(str1), len(str2)
 	LCSMatrix = make([][]int, n1+1)
 	for i := 0; i <= n1; i++ {
