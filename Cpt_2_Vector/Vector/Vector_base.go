@@ -75,7 +75,18 @@ func (T Vector) find(e interface{}) Rank {
 	return T.findLH(e, 0, T._size)
 }
 
-func (T Vector) findLH(e interface{}, lo Rank, hi Rank) Rank {}
+func (T Vector) findLH(e interface{}, lo Rank, hi Rank) Rank {
+	hi--
+	for lo <= hi {
+		if T._elem[hi] == e {
+			break
+		}
+		hi--
+	}
+	return hi
+	// hi < lo 则意味着失败
+	// 交给上层算法判断
+}
 
 func (T Vector) search(e interface{}) Rank {}
 
@@ -121,7 +132,19 @@ func (T Vector) unsort() {
 	T.unsortLH(0, T._size)
 }
 
-func (T Vector) deduplicate() int {}
+func (T Vector) deduplicate() int {
+	// disorder vector uniquify
+	oldSize := T._size
+	i := 1
+	for i < T._size {
+		if T.findLH(T._elem[i], 0, i) < 0 {
+			i++
+		} else {
+			T.remove(i)
+		}
+	}
+	return oldSize - T._size
+}
 
 func (T Vector) uniquify() int {}
 
@@ -146,7 +169,15 @@ func (T Vector) expand() {
 	T._capacity = T._capacity << 1
 }
 
-func (T Vector) shrink() {}
+func (T Vector) shrink() {
+	if T._size >= T._capacity/2 {
+		return
+	}
+	if T._capacity < DefaultCapacity {
+		T._capacity = DefaultCapacity
+	}
+	T._capacity = T._capacity >> 1
+}
 
 func (T Vector) bubble(lo Rank, hi Rank) bool {}
 
@@ -168,7 +199,7 @@ func (T Vector) heapSort(lo Rank, hi Rank) {}
 
 /* ----- traverse ----- */
 
-func (T Vector) traverse() {}
+func (T Vector) traverse(visit func) {}
 
 func (T Vector) get(r Rank) interface{} {
 	return T._elem[r]
