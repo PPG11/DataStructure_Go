@@ -199,7 +199,7 @@ func (T Vector) heapSort(lo Rank, hi Rank) {}
 
 /* ----- traverse ----- */
 
-func (T Vector) traverse(visit func) {}
+func (T Vector) traverse(fun1 func(int, int) string) {}
 
 func (T Vector) get(r Rank) interface{} {
 	return T._elem[r]
