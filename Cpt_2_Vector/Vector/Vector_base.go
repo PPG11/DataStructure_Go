@@ -305,9 +305,25 @@ func (T Vector) bubble(lo Rank, hi Rank) bool {
 	return sorted
 }
 
+func (T Vector) bubble2(lo Rank, hi Rank) Rank {
+	last := lo
+	for lo < hi {
+		if T._elem[lo-1].(float64) > T._elem[lo].(float64) {
+			last = lo
+			T._elem[lo-1], T._elem[lo] = T._elem[lo], T._elem[lo-1]
+		}
+	}
+	return last
+}
+
 func (T Vector) bubbleSort(lo Rank, hi Rank) {
-	for !T.bubble(lo, hi) { // bubble one by one
-		hi--
+	// type 1
+	//for !T.bubble(lo, hi) { // bubble one by one
+	//	hi--
+	//}
+
+	for lo < hi {
+		hi = T.bubble2(lo, hi)
 	}
 }
 
@@ -315,9 +331,36 @@ func (T Vector) max(lo Rank, hi Rank) Rank {}
 
 func (T Vector) selectionSort(lo Rank, hi Rank) {}
 
-func (T Vector) merge(lo Rank, mi Rank, hi Rank) {}
+func (T Vector) merge(lo Rank, mi Rank, hi Rank) {
+	lb, lc := mi-lo, hi-mi
+	A := T._elem[lo:hi]
+	B := make([]interface{}, lb)
+	_ = copy(B, T._elem[lo:mi])
+	C := T._elem[mi:hi]
 
-func (T Vector) mergeSort(lo Rank, hi Rank) {}
+	for i, j, k := 0, 0, 0; (j < lb) || (k < lc); {
+		if (j < lb) && (lc <= k || B[j].(float64) <= C[k].(float64)) {
+			A[i] = B[j]
+			i++
+			j++
+		}
+		if (k < lc) && (lb <= j || C[k].(float64) < B[j].(float64)) {
+			A[i] = B[k]
+			i++
+			k++
+		}
+	}
+}
+
+func (T Vector) mergeSort(lo Rank, hi Rank) {
+	if hi-lo < 2 {
+		return
+	}
+	mi := (hi + lo) >> 1
+	T.mergeSort(lo, mi)
+	T.mergeSort(mi, hi)
+	T.merge(lo, mi, hi)
+}
 
 func (T Vector) partition(lo Rank, hi Rank) Rank {}
 
