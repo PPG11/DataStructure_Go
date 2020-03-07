@@ -19,10 +19,10 @@ type myVectorInterface interface {
 	disordered() int
 	sort()
 	find(e interface{}) Rank
-	search(e interface{}) Rank
+	search(e interface{}, lo Rank, hi Rank) Rank
 	deduplicate() int
 	uniquify() int
-	traverse()
+	traverse(fun1 func(interface{}))
 }
 
 type Vector struct {
@@ -217,9 +217,9 @@ func (T Vector) sort() {
 
 func (T Vector) unsortLH(lo Rank, hi Rank) {}
 
-func (T Vector) unsort() {
-	T.unsortLH(0, T._size)
-}
+//func (T Vector) unsort() {
+//	T.unsortLH(0, T._size)
+//}
 
 func (T Vector) deduplicate() int {
 	// disorder vector uniquify
@@ -338,14 +338,26 @@ func (T Vector) merge(lo Rank, mi Rank, hi Rank) {
 	_ = copy(B, T._elem[lo:mi])
 	C := T._elem[mi:hi]
 
-	for i, j, k := 0, 0, 0; (j < lb) || (k < lc); {
-		if (j < lb) && (lc <= k || B[j].(float64) <= C[k].(float64)) {
+	//for i, j, k := 0, 0, 0; (j < lb) || (k < lc); {
+	//	if (j < lb) && (lc <= k || B[j].(float64) <= C[k].(float64)) {
+	//		A[i] = B[j]
+	//		i++
+	//		j++
+	//	}
+	//	if (k < lc) && (lb <= j || C[k].(float64) < B[j].(float64)) {
+	//		A[i] = C[k]
+	//		i++
+	//		k++
+	//	}
+	//}
+	for i, j, k := 0, 0, 0; j < lb; {
+		if lc <= k || B[j].(float64) <= C[k].(float64) {
 			A[i] = B[j]
 			i++
 			j++
 		}
-		if (k < lc) && (lb <= j || C[k].(float64) < B[j].(float64)) {
-			A[i] = B[k]
+		if k < lc && C[k].(float64) < B[j].(float64) {
+			A[i] = C[k]
 			i++
 			k++
 		}
