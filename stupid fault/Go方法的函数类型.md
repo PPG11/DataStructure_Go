@@ -72,7 +72,7 @@ b2: func(main.vec, int) int
 
 证明方法就是一种函数，只是替我们隐去了第一个变量，这里第一个变量默认为调用方法的结构体结构体本身
 
-即一下两个函数完全是等价的()
+即以下两个函数完全是等价的()
 ```go
 func myFun1(T myStruct, parm1 int, parm2 string) int
 ```

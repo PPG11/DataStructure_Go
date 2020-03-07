@@ -1,5 +1,11 @@
 package Vector
 
+import (
+	"math/rand"
+	"reflect"
+	"time"
+)
+
 type Rank = int
 
 const DefaultCapacity int = 3
@@ -69,7 +75,18 @@ func (T Vector) empty() bool {
 	}
 }
 
-func (T Vector) disordered() int {}
+func (T Vector) disordered() int {
+	if reflect.TypeOf(T._elem[0]).String() == "Slice" || reflect.TypeOf(T._elem[0]).String() == "Map" || reflect.TypeOf(T._elem[0]).String() == "Func" {
+		return -1
+	}
+	n := 0
+	for i := 1; i < T._size; i++ {
+		if T._elem[i-1].(float64) > T._elem[i].(float64) {
+			n++
+		}
+	}
+	return n
+}
 
 func (T Vector) find(e interface{}) Rank {
 	return T.findLH(e, 0, T._size)
@@ -88,7 +105,69 @@ func (T Vector) findLH(e interface{}, lo Rank, hi Rank) Rank {
 	// 交给上层算法判断
 }
 
-func (T Vector) search(e interface{}) Rank {}
+func (T Vector) search(e interface{}, lo Rank, hi Rank) Rank {
+	rand.Seed(time.Now().UnixNano())
+	if rand.Intn(2) == 0 {
+		return T.binSearch(e, lo, hi)
+	} else {
+		return T.fibSearch(e, lo, hi)
+	}
+}
+
+func (T Vector) binSearch(e interface{}, lo Rank, hi Rank) Rank {
+	for lo < hi {
+		switch mi := (lo + hi) >> 1; {
+		case e.(float64) < T._elem[mi].(float64):
+			hi = mi
+		case T._elem[mi].(float64) < e.(float64):
+			lo = mi + 1
+		default:
+			return mi
+		}
+	}
+	return -1
+}
+
+func (T Vector) binSearch2(e interface{}, lo Rank, hi Rank) Rank {
+	for lo < hi {
+		if mi := (lo + hi) >> 1; e.(float64) < T._elem[mi].(float64) {
+			hi = mi
+		} else {
+			lo = mi + 1
+		}
+	}
+	return lo - 1
+}
+
+func (T Vector) fibSearch(e interface{}, lo Rank, hi Rank) Rank {
+	fib := Fib{f: 0, g: 1}
+	for hi-lo > fib.g {
+		fib.prev()
+	}
+	switch mi := lo + fib.f - 1; {
+	case e.(float64) < T._elem[mi].(float64):
+		hi = mi
+	case T._elem[mi].(float64) < e.(float64):
+		lo = mi + 1
+	default:
+		return mi
+	}
+	return -1
+}
+
+type Fib struct {
+	f int
+	g int
+}
+
+//func (F Fib) get() int {
+//	return F.g
+//}
+
+func (F Fib) prev() {
+	F.g = F.g + F.f
+	F.f = F.g - F.f
+}
 
 /* ----- Accessible Interface ----- */
 func (T Vector) remove(r Rank) interface{} {
@@ -146,7 +225,32 @@ func (T Vector) deduplicate() int {
 	return oldSize - T._size
 }
 
-func (T Vector) uniquify() int {}
+func (T Vector) uniquifyBad() int {
+	oldSize := T._size
+	i := 0
+	for i < T._size {
+		if T._elem[i] == T._elem[i+1] {
+			T.remove(i + 1)
+		} else {
+			i++
+		}
+	}
+	return oldSize - T._size
+}
+
+func (T Vector) uniquify() int {
+	var i, j int
+	for i, j = 0, 1; j < T._size; j++ {
+		if T._elem[i] != T._elem[j] {
+			i++
+			T._elem[i] = T._elem[j]
+		}
+	}
+	i++
+	T._size = i
+	T.shrink()
+	return j - i
+}
 
 /* ----- Protected Interface ----- */
 func (T Vector) copyFrom(A interface{}, lo Rank, hi Rank) {
@@ -199,7 +303,11 @@ func (T Vector) heapSort(lo Rank, hi Rank) {}
 
 /* ----- traverse ----- */
 
-func (T Vector) traverse(fun1 func(int, int) string) {}
+func (T Vector) traverse(fun1 func(interface{})) {
+	for item := range T._elem {
+		fun1(item)
+	}
+}
 
 func (T Vector) get(r Rank) interface{} {
 	return T._elem[r]
