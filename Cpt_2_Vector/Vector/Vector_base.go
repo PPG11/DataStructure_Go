@@ -160,10 +160,6 @@ type Fib struct {
 	g int
 }
 
-//func (F Fib) get() int {
-//	return F.g
-//}
-
 func (F Fib) prev() {
 	F.g = F.g + F.f
 	F.f = F.g - F.f
@@ -199,7 +195,21 @@ func (T Vector) insertEnd(e interface{}) {
 	T._elem = append(T._elem, e)
 }
 
-func (T Vector) sortLH(lo Rank, hi Rank) {}
+func (T Vector) sortLH(lo Rank, hi Rank) {
+	rand.Seed(time.Now().UnixNano())
+	switch rand.Intn(5) {
+	case 0:
+		T.bubbleSort(lo, hi)
+	case 1:
+		T.selectionSort(lo, hi)
+	case 2:
+		T.mergeSort(lo, hi)
+	case 3:
+		T.heapSort(lo, hi)
+	default:
+		T.quickSort(lo, hi)
+	}
+}
 
 func (T Vector) sort() {
 	T.sortLH(0, T._size)
@@ -283,9 +293,23 @@ func (T Vector) shrink() {
 	T._capacity = T._capacity >> 1
 }
 
-func (T Vector) bubble(lo Rank, hi Rank) bool {}
+func (T Vector) bubble(lo Rank, hi Rank) bool {
+	sorted := true
+	lo++
+	for lo < hi {
+		if T._elem[lo-1].(float64) > T._elem[lo].(float64) {
+			sorted = false
+			T._elem[lo-1], T._elem[lo] = T._elem[lo], T._elem[lo-1]
+		}
+	}
+	return sorted
+}
 
-func (T Vector) bubbleSort(lo Rank, hi Rank) {}
+func (T Vector) bubbleSort(lo Rank, hi Rank) {
+	for !T.bubble(lo, hi) { // bubble one by one
+		hi--
+	}
+}
 
 func (T Vector) max(lo Rank, hi Rank) Rank {}
 
