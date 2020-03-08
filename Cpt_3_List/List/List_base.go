@@ -21,3 +21,17 @@ func (L List) init() {
 
 	L._size = 0
 }
+
+func NewList() List {
+	var L List
+	L.init()
+	return L
+}
+
+func (L List) get(r int) interface{} {
+	p := &L.header
+	for ; 0 < r; r-- {
+		p = p.succ
+	}
+	return p.data
+}
