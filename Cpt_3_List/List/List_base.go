@@ -7,17 +7,17 @@ type ListNode struct {
 }
 
 type List struct {
-	_size   int
-	header  ListNode
-	trailer ListNode
+	_size  int
+	header ListNode
+	tailer ListNode
 }
 
 func (L List) init() {
 	L.header.pred = nil
-	L.header.succ = &L.trailer
+	L.header.succ = &L.tailer
 
-	L.trailer.pred = &L.header
-	L.trailer.succ = nil
+	L.tailer.pred = &L.header
+	L.tailer.succ = nil
 
 	L._size = 0
 }
@@ -42,7 +42,7 @@ func (L List) first() ListNode {
 }
 
 func (L List) last() ListNode {
-	return *L.trailer.pred
+	return *L.tailer.pred
 }
 
 /****** Find ******/
@@ -92,7 +92,7 @@ func (p ListNode) insertAsSucc(e interface{}) ListNode {
 }
 
 func (L List) insertAsLast(e interface{}) {
-	L.insertBefore(L.trailer, e)
+	L.insertBefore(L.tailer, e)
 }
 
 func (L List) insertAsFirst(e interface{}) {
@@ -125,7 +125,7 @@ func (L List) deduplicate() int {
 	oldSize := L._size
 	p := L.first()
 	r := 1
-	for p = *p.succ; L.trailer != p; p = *p.succ {
+	for p = *p.succ; L.tailer != p; p = *p.succ {
 		q := L.findBefore(p.data, r, p)
 		if q != nil {
 			L.remove(*q)
@@ -143,8 +143,7 @@ func (L List) uniquify() int {
 	}
 	oldSize := L._size
 	p := L.first()
-	r := 1
-	for q := *p.succ; L.trailer != q; q = *p.succ {
+	for q := *p.succ; L.tailer != q; q = *p.succ {
 		if q.data == p.data {
 			L.remove(q)
 		} else {
@@ -152,4 +151,52 @@ func (L List) uniquify() int {
 		}
 	}
 	return oldSize - L._size
+}
+
+/****** For Sort List: search ******/
+func (L List) search(e interface{}, n int, p ListNode) ListNode {
+	for n--; 0 < n; n-- {
+		p = *p.pred
+		if p.data.(float64) <= e.(float64) {
+			break
+		}
+	}
+	return p
+}
+
+/****** Selection Sort ******/
+func (L List) selectionSort(p ListNode, n int) {
+	head := *p.pred
+	tail := p
+
+	// put tail into the right place
+	for i := 0; i < n; i++ {
+		tail = *p.succ
+	}
+
+	for 1 < n {
+		L.insertBefore(tail, L.remove(L.selectMax(*head.succ, n)))
+		tail = *tail.pred
+		n--
+	}
+}
+
+func (L List) selectMax(p ListNode, n int) ListNode { // 1 < n
+	max := p
+	for cur := p; 1 < n; n-- {
+		cur = *cur.succ
+		if max.data.(float64) <= cur.data.(float64) {
+			max = cur
+		}
+	}
+	return max
+}
+
+/****** Selection Sort ******/
+func (L List) insertionSort(p ListNode, n int) {
+	for r := 0; r < n; r++ {
+		L.insertAfter(L.search(p.data, r, p), p.data)
+		p = *p.succ
+		L.remove(*p.pred)
+	}
 }
