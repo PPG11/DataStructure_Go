@@ -10,20 +10,20 @@ type Rank = int
 
 const DefaultCapacity int = 3
 
-type myVectorInterface interface {
-	size() Rank
-	get(r Rank) interface{}
-	put(r Rank, e interface{})
-	insert(r Rank, e interface{})
-	remove(r Rank) interface{}
-	disordered() int
-	sort()
-	find(e interface{}) Rank
-	search(e interface{}, lo Rank, hi Rank) Rank
-	deduplicate() int
-	uniquify() int
-	traverse(fun1 func(interface{}))
-}
+//type myVectorInterface interface {
+//	size() Rank
+//	get(r Rank) interface{}
+//	put(r Rank, e interface{})
+//	insert(r Rank, e interface{})
+//	remove(r Rank) interface{}
+//	disordered() int
+//	sort()
+//	find(e interface{}) Rank
+//	search(e interface{}, lo Rank, hi Rank) Rank
+//	deduplicate() int
+//	uniquify() int
+//	traverse(fun1 func(interface{}))
+//}
 
 type Vector struct {
 	_size     Rank
@@ -182,7 +182,7 @@ func (T Vector) removeLH(lo Rank, hi Rank) int {
 	return hi - lo
 }
 
-func (T Vector) insert(r Rank, e interface{}) {
+func (T Vector) Insert(r Rank, e interface{}) {
 	T._size++
 	T.expand()
 	behindElem := append([]interface{}{e}, T._elem[r:]...)
