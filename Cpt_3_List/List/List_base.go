@@ -13,7 +13,7 @@ type ListInterface interface {
 	InsertAsLast(e interface{})
 	InsertAfter(p ListNode, e interface{}) ListNode
 	InsertBefore(p ListNode, e interface{}) ListNode
-	Remove(p ListNode) interface{}
+	Remove(p *ListNode) interface{}
 	//disordered()
 	Sort(p ListNode, n int)
 	//find()
@@ -35,7 +35,7 @@ type List struct {
 	tailer ListNode
 }
 
-func (L List) init() {
+func (L *List) init() {
 	L.header.pred = nil
 	L.header.succ = &L.tailer
 
@@ -45,14 +45,14 @@ func (L List) init() {
 	L._size = 0
 }
 
-func NewList() List {
-	L := List{}
-	L.init()
-	return L
-}
+//func NewList() List {
+//	L := List{}
+//	L.init()
+//	return L
+//}
 
 /****** Basic ******/
-func (L List) get(r int) interface{} {
+func (L *List) get(r int) interface{} {
 	p := &L.header
 	for ; 0 < r; r-- {
 		p = p.succ
@@ -60,20 +60,20 @@ func (L List) get(r int) interface{} {
 	return p.data
 }
 
-func (L List) First() ListNode {
+func (L *List) First() ListNode {
 	return *L.header.succ
 }
 
-func (L List) Last() ListNode {
+func (L *List) Last() ListNode {
 	return *L.tailer.pred
 }
 
-func (L List) Size() int {
+func (L *List) Size() int {
 	return L._size
 }
 
 /****** Find ******/
-func (L List) findBefore(e interface{}, n int, p ListNode) *ListNode {
+func (L *List) findBefore(e interface{}, n int, p ListNode) *ListNode {
 	for ; 0 < n; n-- {
 		p = *p.pred
 		if e == p.data {
@@ -83,7 +83,7 @@ func (L List) findBefore(e interface{}, n int, p ListNode) *ListNode {
 	return nil
 }
 
-func (L List) findAfter(e interface{}, p ListNode, n int) *ListNode {
+func (L *List) findAfter(e interface{}, p ListNode, n int) *ListNode {
 	for ; 0 < n; n-- {
 		p = *p.succ
 		if e == p.data {
@@ -94,40 +94,40 @@ func (L List) findAfter(e interface{}, p ListNode, n int) *ListNode {
 }
 
 /****** Insert ******/
-func (L List) InsertBefore(p ListNode, e interface{}) ListNode {
+func (L *List) InsertBefore(p ListNode, e interface{}) ListNode {
 	L._size++
 	return p.insertAsPred(e)
 }
 
-func (p ListNode) insertAsPred(e interface{}) ListNode {
-	x := ListNode{e, p.pred, &p}
+func (p *ListNode) insertAsPred(e interface{}) ListNode {
+	x := ListNode{e, p.pred, p}
 	p.pred.succ = &x
 	p.pred = &x
 	return x
 }
 
-func (L List) InsertAfter(p ListNode, e interface{}) ListNode {
+func (L *List) InsertAfter(p ListNode, e interface{}) ListNode {
 	L._size++
 	return p.insertAsSucc(e)
 }
 
-func (p ListNode) insertAsSucc(e interface{}) ListNode {
-	x := ListNode{e, &p, p.succ}
+func (p *ListNode) insertAsSucc(e interface{}) ListNode {
+	x := ListNode{e, p, p.succ}
 	p.succ.pred = &x
 	p.succ = &x
 	return x
 }
 
-func (L List) InsertAsLast(e interface{}) {
+func (L *List) InsertAsLast(e interface{}) {
 	L.InsertBefore(L.tailer, e)
 }
 
-func (L List) InsertAsFirst(e interface{}) {
+func (L *List) InsertAsFirst(e interface{}) {
 	L.InsertAfter(L.header, e)
 }
 
 /****** Copy part of list ******/
-func (L List) copyNodes(p ListNode, n int) {
+func (L *List) copyNodes(p ListNode, n int) {
 	L.init()
 	for ; n != 0; n-- {
 		L.InsertAsLast(p.data)
@@ -136,7 +136,7 @@ func (L List) copyNodes(p ListNode, n int) {
 }
 
 /****** Remove ******/
-func (L List) Remove(p ListNode) interface{} {
+func (L *List) Remove(p *ListNode) interface{} {
 	e := p.data
 	p.pred.succ = p.succ
 	p.succ.pred = p.pred
@@ -145,7 +145,7 @@ func (L List) Remove(p ListNode) interface{} {
 }
 
 /****** Deduplicate ******/
-func (L List) Deduplicate() int {
+func (L *List) Deduplicate() int {
 	if L._size < 2 {
 		return 0
 	}
@@ -155,7 +155,7 @@ func (L List) Deduplicate() int {
 	for p = *p.succ; L.tailer != p; p = *p.succ {
 		q := L.findBefore(p.data, r, p)
 		if q != nil {
-			L.Remove(*q)
+			L.Remove(q)
 		} else {
 			r++
 		}
@@ -164,7 +164,7 @@ func (L List) Deduplicate() int {
 }
 
 /****** For Sort List: uniquify ******/
-func (L List) Uniquify() int {
+func (L *List) Uniquify() int {
 	if L._size < 2 {
 		return 0
 	}
@@ -172,7 +172,7 @@ func (L List) Uniquify() int {
 	p := L.First()
 	for q := *p.succ; L.tailer != q; q = *p.succ {
 		if q.data == p.data {
-			L.Remove(q)
+			L.Remove(&q)
 		} else {
 			p = q
 		}
@@ -181,7 +181,7 @@ func (L List) Uniquify() int {
 }
 
 /****** For Sort List: search ******/
-func (L List) Search(e interface{}, n int, p ListNode) ListNode {
+func (L *List) Search(e interface{}, n int, p ListNode) ListNode {
 	for n--; 0 < n; n-- {
 		p = *p.pred
 		if p.data.(float64) <= e.(float64) {
@@ -192,7 +192,7 @@ func (L List) Search(e interface{}, n int, p ListNode) ListNode {
 }
 
 /****** Selection Sort ******/
-func (L List) selectionSort(p ListNode, n int) {
+func (L *List) selectionSort(p ListNode, n int) {
 	head := *p.pred
 	tail := p
 
@@ -208,7 +208,7 @@ func (L List) selectionSort(p ListNode, n int) {
 	}
 }
 
-func (L List) selectMax(p ListNode, n int) ListNode { // 1 < n
+func (L *List) selectMax(p ListNode, n int) *ListNode { // 1 < n
 	max := p
 	for cur := p; 1 < n; n-- {
 		cur = *cur.succ
@@ -216,20 +216,20 @@ func (L List) selectMax(p ListNode, n int) ListNode { // 1 < n
 			max = cur
 		}
 	}
-	return max
+	return &max
 }
 
 /****** Selection Sort ******/
-func (L List) insertionSort(p ListNode, n int) {
+func (L *List) insertionSort(p ListNode, n int) {
 	for r := 0; r < n; r++ {
 		L.InsertAfter(L.Search(p.data, r, p), p.data)
 		p = *p.succ
-		L.Remove(*p.pred)
+		L.Remove(p.pred)
 	}
 }
 
 /****** Sort ******/
-func (L List) Sort(p ListNode, n int) {
+func (L *List) Sort(p ListNode, n int) {
 	rand.Seed(time.Now().UnixNano())
 	switch rand.Intn(2) {
 	case 0:
