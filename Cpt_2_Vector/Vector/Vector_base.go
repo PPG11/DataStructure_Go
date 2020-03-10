@@ -197,25 +197,25 @@ func (T Vector) insertEnd(e interface{}) {
 
 func (T Vector) sortLH(lo Rank, hi Rank) {
 	rand.Seed(time.Now().UnixNano())
-	switch rand.Intn(5) {
+	switch rand.Intn(2) {
 	case 0:
 		T.bubbleSort(lo, hi)
 	case 1:
-		T.selectionSort(lo, hi)
-	case 2:
 		T.mergeSort(lo, hi)
-	case 3:
-		T.heapSort(lo, hi)
-	default:
-		T.quickSort(lo, hi)
+		//case 2:
+		//	T.selectionSort(lo, hi)
+		//case 3:
+		//	T.heapSort(lo, hi)
+		//default:
+		//	T.quickSort(lo, hi)
 	}
 }
 
-func (T Vector) sort() {
-	T.sortLH(0, T._size)
-}
+//func (T Vector) sort() {
+//	T.sortLH(0, T._size)
+//}
 
-func (T Vector) unsortLH(lo Rank, hi Rank) {}
+//func (T Vector) unsortLH(lo Rank, hi Rank) {}
 
 //func (T Vector) unsort() {
 //	T.unsortLH(0, T._size)
@@ -327,9 +327,9 @@ func (T Vector) bubbleSort(lo Rank, hi Rank) {
 	}
 }
 
-func (T Vector) max(lo Rank, hi Rank) Rank {}
+//func (T Vector) max(lo Rank, hi Rank) Rank {}
 
-func (T Vector) selectionSort(lo Rank, hi Rank) {}
+//func (T Vector) selectionSort(lo Rank, hi Rank) {}
 
 func (T Vector) merge(lo Rank, mi Rank, hi Rank) {
 	lb, lc := mi-lo, hi-mi
@@ -374,11 +374,11 @@ func (T Vector) mergeSort(lo Rank, hi Rank) {
 	T.merge(lo, mi, hi)
 }
 
-func (T Vector) partition(lo Rank, hi Rank) Rank {}
+//func (T Vector) partition(lo Rank, hi Rank) Rank {}
 
-func (T Vector) quickSort(lo Rank, hi Rank) {}
+//func (T Vector) quickSort(lo Rank, hi Rank) {}
 
-func (T Vector) heapSort(lo Rank, hi Rank) {}
+//func (T Vector) heapSort(lo Rank, hi Rank) {}
 
 /* ----- traverse ----- */
 
