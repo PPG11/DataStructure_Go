@@ -17,6 +17,8 @@
 ```go
 package Vector
 
+type Rank = int
+
 type Vector struct {
 	_size     Rank
 	_capacity int
@@ -72,3 +74,31 @@ type Stack = Vector.Vector
 本例中，首字母大写的 `Empty()` 方法可以被 `Stack` 使用
 
 而首字母小写的 `size()` 方法不能使用
+
+---
+
+但是还有新问题！
+
+### 在`import`结构体后，需要定义新的方法
+
+会发现提示`cannot define new methods on non-local type`
+
+非本地包无法添加新的方法，但是这里如果要添加 `Stack` 的一些新功能怎么办呢
+
+这里采用的是"继承"的方法，即通过与如下设置得到
+
+```go
+type Stack struct {
+    Vector.Vector
+}
+```
+
+这样这里`Stack`可以通过 `Stack.Vector.xxx` 访问原来的函数
+
+并且可以通过给Stack设置新的 `method` 来增加新功能
+
+这个时候再思考这个过程，其实本身 `Stack` 也算是对 `Vector` 的一种继承
+
+所以这样设置是合理的
+
+bingo~
