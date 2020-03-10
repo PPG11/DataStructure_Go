@@ -1,5 +1,28 @@
 package List
 
+import (
+	"math/rand"
+	"time"
+)
+
+type ListInterface interface {
+	Size() int
+	First() ListNode
+	Last() ListNode
+	InsertAsFirst(e interface{})
+	InsertAsLast(e interface{})
+	InsertAfter(p ListNode, e interface{}) ListNode
+	InsertBefore(p ListNode, e interface{}) ListNode
+	Remove(p ListNode) interface{}
+	//disordered()
+	Sort(p ListNode, n int)
+	//find()
+	Search(e interface{}, n int, p ListNode) ListNode
+	Deduplicate() int
+	Uniquify() int
+	//traverse()
+}
+
 type ListNode struct {
 	data interface{}
 	pred *ListNode
@@ -37,12 +60,16 @@ func (L List) get(r int) interface{} {
 	return p.data
 }
 
-func (L List) first() ListNode {
+func (L List) First() ListNode {
 	return *L.header.succ
 }
 
-func (L List) last() ListNode {
+func (L List) Last() ListNode {
 	return *L.tailer.pred
+}
+
+func (L List) Size() int {
+	return L._size
 }
 
 /****** Find ******/
@@ -67,7 +94,7 @@ func (L List) findAfter(e interface{}, p ListNode, n int) *ListNode {
 }
 
 /****** Insert ******/
-func (L List) insertBefore(p ListNode, e interface{}) ListNode {
+func (L List) InsertBefore(p ListNode, e interface{}) ListNode {
 	L._size++
 	return p.insertAsPred(e)
 }
@@ -79,7 +106,7 @@ func (p ListNode) insertAsPred(e interface{}) ListNode {
 	return x
 }
 
-func (L List) insertAfter(p ListNode, e interface{}) ListNode {
+func (L List) InsertAfter(p ListNode, e interface{}) ListNode {
 	L._size++
 	return p.insertAsSucc(e)
 }
@@ -91,25 +118,25 @@ func (p ListNode) insertAsSucc(e interface{}) ListNode {
 	return x
 }
 
-func (L List) insertAsLast(e interface{}) {
-	L.insertBefore(L.tailer, e)
+func (L List) InsertAsLast(e interface{}) {
+	L.InsertBefore(L.tailer, e)
 }
 
-func (L List) insertAsFirst(e interface{}) {
-	L.insertAfter(L.header, e)
+func (L List) InsertAsFirst(e interface{}) {
+	L.InsertAfter(L.header, e)
 }
 
 /****** Copy part of list ******/
 func (L List) copyNodes(p ListNode, n int) {
 	L.init()
 	for ; n != 0; n-- {
-		L.insertAsLast(p.data)
+		L.InsertAsLast(p.data)
 		p = *p.succ
 	}
 }
 
 /****** Remove ******/
-func (L List) remove(p ListNode) interface{} {
+func (L List) Remove(p ListNode) interface{} {
 	e := p.data
 	p.pred.succ = p.succ
 	p.succ.pred = p.pred
@@ -118,17 +145,17 @@ func (L List) remove(p ListNode) interface{} {
 }
 
 /****** Deduplicate ******/
-func (L List) deduplicate() int {
+func (L List) Deduplicate() int {
 	if L._size < 2 {
 		return 0
 	}
 	oldSize := L._size
-	p := L.first()
+	p := L.First()
 	r := 1
 	for p = *p.succ; L.tailer != p; p = *p.succ {
 		q := L.findBefore(p.data, r, p)
 		if q != nil {
-			L.remove(*q)
+			L.Remove(*q)
 		} else {
 			r++
 		}
@@ -137,15 +164,15 @@ func (L List) deduplicate() int {
 }
 
 /****** For Sort List: uniquify ******/
-func (L List) uniquify() int {
+func (L List) Uniquify() int {
 	if L._size < 2 {
 		return 0
 	}
 	oldSize := L._size
-	p := L.first()
+	p := L.First()
 	for q := *p.succ; L.tailer != q; q = *p.succ {
 		if q.data == p.data {
-			L.remove(q)
+			L.Remove(q)
 		} else {
 			p = q
 		}
@@ -154,7 +181,7 @@ func (L List) uniquify() int {
 }
 
 /****** For Sort List: search ******/
-func (L List) search(e interface{}, n int, p ListNode) ListNode {
+func (L List) Search(e interface{}, n int, p ListNode) ListNode {
 	for n--; 0 < n; n-- {
 		p = *p.pred
 		if p.data.(float64) <= e.(float64) {
@@ -175,7 +202,7 @@ func (L List) selectionSort(p ListNode, n int) {
 	}
 
 	for 1 < n {
-		L.insertBefore(tail, L.remove(L.selectMax(*head.succ, n)))
+		L.InsertBefore(tail, L.Remove(L.selectMax(*head.succ, n)))
 		tail = *tail.pred
 		n--
 	}
@@ -195,8 +222,19 @@ func (L List) selectMax(p ListNode, n int) ListNode { // 1 < n
 /****** Selection Sort ******/
 func (L List) insertionSort(p ListNode, n int) {
 	for r := 0; r < n; r++ {
-		L.insertAfter(L.search(p.data, r, p), p.data)
+		L.InsertAfter(L.Search(p.data, r, p), p.data)
 		p = *p.succ
-		L.remove(*p.pred)
+		L.Remove(*p.pred)
+	}
+}
+
+/****** Sort ******/
+func (L List) Sort(p ListNode, n int) {
+	rand.Seed(time.Now().UnixNano())
+	switch rand.Intn(2) {
+	case 0:
+		L.selectionSort(p, n)
+	case 1:
+		L.insertionSort(p, n)
 	}
 }

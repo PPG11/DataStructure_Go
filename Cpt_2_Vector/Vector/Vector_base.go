@@ -10,20 +10,20 @@ type Rank = int
 
 const DefaultCapacity int = 3
 
-//type myVectorInterface interface {
-//	size() Rank
-//	get(r Rank) interface{}
-//	put(r Rank, e interface{})
-//	insert(r Rank, e interface{})
-//	remove(r Rank) interface{}
-//	disordered() int
-//	sort()
-//	find(e interface{}) Rank
-//	search(e interface{}, lo Rank, hi Rank) Rank
-//	deduplicate() int
-//	uniquify() int
-//	traverse(fun1 func(interface{}))
-//}
+type VectorInterface interface {
+	Size() Rank
+	Get(r Rank) interface{}
+	Put(r Rank, e interface{})
+	Insert(r Rank, e interface{})
+	Remove(r Rank) interface{}
+	Disordered() int
+	Sort()
+	Find(e interface{}) Rank
+	Search(e interface{}, lo Rank, hi Rank) Rank
+	Deduplicate() int
+	Uniquify() int
+	Traverse(fun1 func(interface{}))
+}
 
 type Vector struct {
 	_size     Rank
@@ -63,7 +63,7 @@ func (T Vector) VectorCopyVectorLH(V Vector, lo Rank, hi Rank) {
 }
 
 /* ----- Read Only Interface ----- */
-func (T Vector) size() Rank {
+func (T Vector) Size() Rank {
 	return T._size
 }
 
@@ -75,7 +75,7 @@ func (T Vector) empty() bool {
 	}
 }
 
-func (T Vector) disordered() int {
+func (T Vector) Disordered() int {
 	if reflect.TypeOf(T._elem[0]).String() == "Slice" || reflect.TypeOf(T._elem[0]).String() == "Map" || reflect.TypeOf(T._elem[0]).String() == "Func" {
 		return -1
 	}
@@ -88,7 +88,7 @@ func (T Vector) disordered() int {
 	return n
 }
 
-func (T Vector) find(e interface{}) Rank {
+func (T Vector) Find(e interface{}) Rank {
 	return T.findLH(e, 0, T._size)
 }
 
@@ -105,7 +105,7 @@ func (T Vector) findLH(e interface{}, lo Rank, hi Rank) Rank {
 	// 交给上层算法判断
 }
 
-func (T Vector) search(e interface{}, lo Rank, hi Rank) Rank {
+func (T Vector) Search(e interface{}, lo Rank, hi Rank) Rank {
 	rand.Seed(time.Now().UnixNano())
 	if rand.Intn(2) == 0 {
 		return T.binSearch(e, lo, hi)
@@ -166,7 +166,7 @@ func (F Fib) prev() {
 }
 
 /* ----- Accessible Interface ----- */
-func (T Vector) remove(r Rank) interface{} {
+func (T Vector) Remove(r Rank) interface{} {
 	e := T._elem[r]
 	_ = T.removeLH(r, r+1)
 	return e
@@ -211,9 +211,9 @@ func (T Vector) sortLH(lo Rank, hi Rank) {
 	}
 }
 
-//func (T Vector) sort() {
-//	T.sortLH(0, T._size)
-//}
+func (T Vector) Sort() {
+	T.sortLH(0, T._size)
+}
 
 //func (T Vector) unsortLH(lo Rank, hi Rank) {}
 
@@ -221,7 +221,7 @@ func (T Vector) sortLH(lo Rank, hi Rank) {
 //	T.unsortLH(0, T._size)
 //}
 
-func (T Vector) deduplicate() int {
+func (T Vector) Deduplicate() int {
 	// disorder vector uniquify
 	oldSize := T._size
 	i := 1
@@ -229,7 +229,7 @@ func (T Vector) deduplicate() int {
 		if T.findLH(T._elem[i], 0, i) < 0 {
 			i++
 		} else {
-			T.remove(i)
+			T.Remove(i)
 		}
 	}
 	return oldSize - T._size
@@ -240,7 +240,7 @@ func (T Vector) uniquifyBad() int {
 	i := 0
 	for i < T._size {
 		if T._elem[i] == T._elem[i+1] {
-			T.remove(i + 1)
+			T.Remove(i + 1)
 		} else {
 			i++
 		}
@@ -248,7 +248,7 @@ func (T Vector) uniquifyBad() int {
 	return oldSize - T._size
 }
 
-func (T Vector) uniquify() int {
+func (T Vector) Uniquify() int {
 	var i, j int
 	for i, j = 0, 1; j < T._size; j++ {
 		if T._elem[i] != T._elem[j] {
@@ -382,16 +382,16 @@ func (T Vector) mergeSort(lo Rank, hi Rank) {
 
 /* ----- traverse ----- */
 
-func (T Vector) traverse(fun1 func(interface{})) {
+func (T Vector) Traverse(fun1 func(interface{})) {
 	for item := range T._elem {
 		fun1(item)
 	}
 }
 
-func (T Vector) get(r Rank) interface{} {
+func (T Vector) Get(r Rank) interface{} {
 	return T._elem[r]
 }
 
-func (T Vector) put(r Rank, e interface{}) {
+func (T Vector) Put(r Rank, e interface{}) {
 	T._elem[r] = e
 }
