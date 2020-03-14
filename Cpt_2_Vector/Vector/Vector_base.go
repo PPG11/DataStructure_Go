@@ -72,7 +72,7 @@ func (T *Vector) SSpp() {
 	T.SS++
 }
 
-func (T *Vector) empty() bool {
+func (T *Vector) Empty() bool {
 	if T._size == 0 {
 		return true
 	} else {
