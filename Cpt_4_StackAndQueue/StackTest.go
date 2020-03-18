@@ -4,6 +4,7 @@ import (
 	"datastructure/DataStructure_Go/Cpt_4_StackAndQueue/Stack"
 	"fmt"
 	"math"
+	"strconv"
 )
 
 func main() {
@@ -20,8 +21,12 @@ func main() {
 
 	exp := "(1+2^3!-4)*(5!-(6-(7-(89-0!))))$"
 	//exp := "(2^3)$"
-	res := evaluate(exp)
-	fmt.Println(res)
+	//var RPN string
+	res, RPN := evaluate(exp)
+	fmt.Printf("result = %.0f\n", res)
+	fmt.Printf("RPN = %s\n", RPN)
+	//result = 2013
+	//RPN =  1 2 3 ! ^ + 4 - 5 ! 6 7 89 0 ! - - - - *
 }
 
 /* ----------- 数值转换 ----------- */
@@ -68,16 +73,18 @@ func paren(exp string, lo int, hi int) bool {
 	return S.Empty()
 }
 
-/* ----------- 中缀表达式 ----------- */
-func evaluate(S string) float64 {
+/* ----------- 中缀表达式 Infix ----------- */
+func evaluate(S string) (res float64, RPN string) {
 	var opnd, optr Stack.Stack
 	optr.Push('$')
+	RPN = ""
 	for !optr.Empty() {
 		//fmt.Printf("%c\n", S[0])
 		if '0' <= S[0] && S[0] <= '9' {
 			S = readNumber(S, &opnd)
 			//opnd.Push(S[0]-48)
 			//S = S[1:]
+			RPN = RPNappend(RPN, strconv.Itoa(int(opnd.Top().(uint8))))
 		} else {
 			//fmt.Printf("S[0]= %c\n", S[0])
 			//fmt.Printf("S[0]= %T\n", S[0])
@@ -101,6 +108,7 @@ func evaluate(S string) float64 {
 				S = S[1:]
 			case '>':
 				op := optr.Pop()
+				RPN = RPNappend(RPN, string(int(op.(uint8))))
 				if op.(uint8) == '!' {
 					pOpnd := f64Assert(opnd.Pop())
 					opnd.Push(calcu1opnd(int(op.(uint8)), pOpnd))
@@ -114,9 +122,9 @@ func evaluate(S string) float64 {
 	}
 	if num, ok := opnd.Top().(uint8); ok {
 		opnd.Pop()
-		return float64(num)
+		return float64(num), RPN
 	}
-	return opnd.Pop().(float64)
+	return opnd.Pop().(float64), RPN
 }
 
 func readNumber(S string, opnd *Stack.Stack) string {
@@ -173,6 +181,7 @@ func factorial(num float64) float64 {
 	return num * factorial(num-1)
 }
 
+// {'+', '-'} < {'*', '/'} < {'^'} < {'!'}
 var pri = [][]int{
 	//              |-------------- 当前运算符 --------------|
 	//              +    -    *    /    ^    !    (    )    $
@@ -216,4 +225,8 @@ func optrIdx(op int32) int {
 	}
 }
 
-/* ----------- 逆波兰表达式表达式 ----------- */
+/* ----------- 逆波兰表达式表达式 Reverse Polish Notation ----------- */
+func RPNappend(rpn string, op string) string {
+	rpn = rpn + " " + op
+	return rpn
+}
