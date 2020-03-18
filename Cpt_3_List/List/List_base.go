@@ -52,7 +52,7 @@ func (L *List) init() {
 //}
 
 /****** Basic ******/
-func (L *List) get(r int) interface{} {
+func (L *List) Get(r int) interface{} {
 	p := &L.header
 	for ; 0 < r; r-- {
 		p = p.succ
@@ -70,6 +70,14 @@ func (L *List) Last() ListNode {
 
 func (L *List) Size() int {
 	return L._size
+}
+
+func (L *List) Empty() bool {
+	if L._size == 0 {
+		return true
+	} else {
+		return false
+	}
 }
 
 /****** Find ******/
