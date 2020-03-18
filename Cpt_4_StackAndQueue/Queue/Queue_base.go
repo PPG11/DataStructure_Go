@@ -3,6 +3,7 @@ package Queue
 import "datastructure/DataStructure_Go/Cpt_3_List/List"
 
 type Queue struct {
+	// Size() 与 Empty() 可以直接使用
 	List.List
 }
 
