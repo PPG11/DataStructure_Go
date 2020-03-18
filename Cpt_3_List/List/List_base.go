@@ -7,8 +7,8 @@ import (
 
 type ListInterface interface {
 	Size() int
-	First() ListNode
-	Last() ListNode
+	First() *ListNode
+	Last() *ListNode
 	InsertAsFirst(e interface{})
 	InsertAsLast(e interface{})
 	InsertAfter(p ListNode, e interface{}) ListNode
@@ -24,7 +24,7 @@ type ListInterface interface {
 }
 
 type ListNode struct {
-	data interface{}
+	Data interface{}
 	pred *ListNode
 	succ *ListNode
 }
@@ -57,15 +57,15 @@ func (L *List) Get(r int) interface{} {
 	for ; 0 < r; r-- {
 		p = p.succ
 	}
-	return p.data
+	return p.Data
 }
 
-func (L *List) First() ListNode {
-	return *L.header.succ
+func (L *List) First() *ListNode {
+	return L.header.succ
 }
 
-func (L *List) Last() ListNode {
-	return *L.tailer.pred
+func (L *List) Last() *ListNode {
+	return L.tailer.pred
 }
 
 func (L *List) Size() int {
@@ -84,7 +84,7 @@ func (L *List) Empty() bool {
 func (L *List) findBefore(e interface{}, n int, p ListNode) *ListNode {
 	for ; 0 < n; n-- {
 		p = *p.pred
-		if e == p.data {
+		if e == p.Data {
 			return &p
 		}
 	}
@@ -94,7 +94,7 @@ func (L *List) findBefore(e interface{}, n int, p ListNode) *ListNode {
 func (L *List) findAfter(e interface{}, p ListNode, n int) *ListNode {
 	for ; 0 < n; n-- {
 		p = *p.succ
-		if e == p.data {
+		if e == p.Data {
 			return &p
 		}
 	}
@@ -138,14 +138,14 @@ func (L *List) InsertAsFirst(e interface{}) {
 func (L *List) copyNodes(p ListNode, n int) {
 	L.init()
 	for ; n != 0; n-- {
-		L.InsertAsLast(p.data)
+		L.InsertAsLast(p.Data)
 		p = *p.succ
 	}
 }
 
 /****** Remove ******/
 func (L *List) Remove(p *ListNode) interface{} {
-	e := p.data
+	e := p.Data
 	p.pred.succ = p.succ
 	p.succ.pred = p.pred
 	L._size--
@@ -158,10 +158,10 @@ func (L *List) Deduplicate() int {
 		return 0
 	}
 	oldSize := L._size
-	p := L.First()
+	p := *L.First()
 	r := 1
 	for p = *p.succ; L.tailer != p; p = *p.succ {
-		q := L.findBefore(p.data, r, p)
+		q := L.findBefore(p.Data, r, p)
 		if q != nil {
 			L.Remove(q)
 		} else {
@@ -177,9 +177,9 @@ func (L *List) Uniquify() int {
 		return 0
 	}
 	oldSize := L._size
-	p := L.First()
+	p := *L.First()
 	for q := *p.succ; L.tailer != q; q = *p.succ {
-		if q.data == p.data {
+		if q.Data == p.Data {
 			L.Remove(&q)
 		} else {
 			p = q
@@ -192,7 +192,7 @@ func (L *List) Uniquify() int {
 func (L *List) Search(e interface{}, n int, p ListNode) ListNode {
 	for n--; 0 < n; n-- {
 		p = *p.pred
-		if p.data.(float64) <= e.(float64) {
+		if p.Data.(float64) <= e.(float64) {
 			break
 		}
 	}
@@ -220,7 +220,7 @@ func (L *List) selectMax(p ListNode, n int) *ListNode { // 1 < n
 	max := p
 	for cur := p; 1 < n; n-- {
 		cur = *cur.succ
-		if max.data.(float64) <= cur.data.(float64) {
+		if max.Data.(float64) <= cur.Data.(float64) {
 			max = cur
 		}
 	}
@@ -230,7 +230,7 @@ func (L *List) selectMax(p ListNode, n int) *ListNode { // 1 < n
 /****** Selection Sort ******/
 func (L *List) insertionSort(p ListNode, n int) {
 	for r := 0; r < n; r++ {
-		L.InsertAfter(L.Search(p.data, r, p), p.data)
+		L.InsertAfter(L.Search(p.Data, r, p), p.Data)
 		p = *p.succ
 		L.Remove(p.pred)
 	}
