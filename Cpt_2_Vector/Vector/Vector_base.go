@@ -29,7 +29,6 @@ type Vector struct {
 	_size     Rank
 	_capacity int
 	_elem     []interface{}
-	SS        int
 }
 
 /* ----- Constructor Function ----- */
@@ -66,10 +65,6 @@ func (T *Vector) VectorCopyVectorLH(V Vector, lo Rank, hi Rank) {
 /* ----- Read Only Interface ----- */
 func (T *Vector) Size() Rank {
 	return T._size
-}
-
-func (T *Vector) SSpp() {
-	T.SS++
 }
 
 func (T *Vector) Empty() bool {

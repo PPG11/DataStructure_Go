@@ -2,6 +2,7 @@ package main
 
 import (
 	"datastructure/DataStructure_Go/Cpt_4_StackAndQueue/Stack"
+	"fmt"
 	"math"
 )
 
@@ -14,10 +15,16 @@ func main() {
 	//fmt.Println(paren(exp, 0, len(exp)))
 	//true
 
-	exp := "3+2$"
-	//fmt.Println(evaluate(exp))
+	//exp := "22$"
+	//22
+
+	exp := "(1+2^3!-4)*(5!-(6-(7-(89-0!))))$"
+	//exp := "(2^3)$"
+	res := evaluate(exp)
+	fmt.Println(res)
 }
 
+/* ----------- 数值转换 ----------- */
 func baseConversation(num int, base int) string {
 	var T Stack.Stack
 	var digit = [...]string{`0`, `1`, `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`, `A`, `B`, `C`,
@@ -33,6 +40,7 @@ func baseConversation(num int, base int) string {
 	return res
 }
 
+/* ----------- 括号匹配 ----------- */
 func paren(exp string, lo int, hi int) bool {
 	var S Stack.Stack
 	for i := lo; i < hi; i++ {
@@ -60,15 +68,31 @@ func paren(exp string, lo int, hi int) bool {
 	return S.Empty()
 }
 
+/* ----------- 中缀表达式 ----------- */
 func evaluate(S string) float64 {
 	var opnd, optr Stack.Stack
 	optr.Push('$')
 	for !optr.Empty() {
+		//fmt.Printf("%c\n", S[0])
 		if '0' <= S[0] && S[0] <= '9' {
-			//readNumber(S[0], opnd)
-			opnd.Push(S[0])
+			S = readNumber(S, &opnd)
+			//opnd.Push(S[0]-48)
+			//S = S[1:]
 		} else {
-			switch orderBetween(optr.Top().(uint8), S[0]) {
+			//fmt.Printf("S[0]= %c\n", S[0])
+			//fmt.Printf("S[0]= %T\n", S[0])
+
+			//fmt.Printf("Top = %c\n", optr.Top())
+			//fmt.Printf("Top = %T\n", optr.Top())
+			var top int32
+			if c, ok := optr.Top().(uint8); ok {
+				top = int32(c)
+			}
+			if c, ok := optr.Top().(int32); ok {
+				top = c
+			}
+			//fmt.Printf("%c\n", orderBetween(top, int32(S[0])))
+			switch orderBetween(top, int32(S[0])) {
 			case '<':
 				optr.Push(S[0])
 				S = S[1:]
@@ -77,17 +101,44 @@ func evaluate(S string) float64 {
 				S = S[1:]
 			case '>':
 				op := optr.Pop()
-				if op == '!' {
-					opnd.Push(calcu1opnd(op.(int), opnd.Pop().(int)))
+				if op.(uint8) == '!' {
+					pOpnd := f64Assert(opnd.Pop())
+					opnd.Push(calcu1opnd(int(op.(uint8)), pOpnd))
 				} else {
-					pOpnd2 := opnd.Pop().(float64)
-					pOpnd1 := opnd.Pop().(float64)
-					opnd.Push(calcu2opnd(pOpnd1, op.(int), pOpnd2))
+					pOpnd2 := f64Assert(opnd.Pop())
+					pOpnd1 := f64Assert(opnd.Pop())
+					opnd.Push(calcu2opnd(pOpnd1, int(op.(uint8)), pOpnd2))
 				}
 			}
 		}
 	}
+	if num, ok := opnd.Top().(uint8); ok {
+		opnd.Pop()
+		return float64(num)
+	}
 	return opnd.Pop().(float64)
+}
+
+func readNumber(S string, opnd *Stack.Stack) string {
+	res := S[0] - 48
+	i := 1
+	for '0' <= S[i] && S[i] <= '9' {
+		res = 10*res + (S[i] - 48)
+		i++
+	}
+	opnd.Push(res)
+	return S[i:]
+}
+
+func f64Assert(in interface{}) float64 {
+	var res float64
+	if c, ok := in.(uint8); ok {
+		res = float64(c)
+	}
+	if c, ok := in.(float64); ok {
+		res = c
+	}
+	return res
 }
 
 func calcu2opnd(opnd1 float64, op int, opnd2 float64) float64 {
@@ -106,7 +157,8 @@ func calcu2opnd(opnd1 float64, op int, opnd2 float64) float64 {
 	}
 }
 
-func calcu1opnd(op int, num int) int {
+func calcu1opnd(op int, num float64) float64 {
+	//num -= 48
 	switch op {
 	//case '!': return factorial(num)
 	default:
@@ -114,7 +166,7 @@ func calcu1opnd(op int, num int) int {
 	}
 }
 
-func factorial(num int) int {
+func factorial(num float64) float64 {
 	if num == 0 {
 		return 1
 	}
@@ -135,12 +187,12 @@ var pri = [][]int{
 	/*  --  $  */ {'<', '<', '<', '<', '<', '<', '<', ' ', '='},
 }
 
-func orderBetween(topOp uint8, newOp uint8) int {
+func orderBetween(topOp int32, newOp int32) int {
 	rowIdx, colIdx := optrIdx(topOp), optrIdx(newOp)
 	return pri[rowIdx][colIdx]
 }
 
-func optrIdx(op uint8) int {
+func optrIdx(op int32) int {
 	switch op { // + - * / ^ ! ( ) $
 	case '+':
 		return 0
@@ -163,3 +215,5 @@ func optrIdx(op uint8) int {
 		return 8
 	}
 }
+
+/* ----------- 逆波兰表达式表达式 ----------- */
