@@ -19,14 +19,19 @@ func main() {
 	//exp := "22$"
 	//22
 
-	exp := "(1+2^3!-4)*(5!-(6-(7-(89-0!))))$"
 	//exp := "(2^3)$"
 	//var RPN string
+	//exp := "(1+2^3!-4)*(5!-(6-(7-(89-0!))))$"
+	//res, RPN := evaluate(exp)
+	//fmt.Printf("result = %.0f\n", res)
+	//fmt.Printf("RPN = %s\n", RPN)
+	//result = 2013
+	//RPN =  1 2 3 ! ^ + 4 - 5 ! 6 7 89 0 ! - - - - *
+
+	exp := "(1+2*3!)/(4*5-7)$"
 	res, RPN := evaluate(exp)
 	fmt.Printf("result = %.0f\n", res)
 	fmt.Printf("RPN = %s\n", RPN)
-	//result = 2013
-	//RPN =  1 2 3 ! ^ + 4 - 5 ! 6 7 89 0 ! - - - - *
 }
 
 /* ----------- 数值转换 ----------- */
