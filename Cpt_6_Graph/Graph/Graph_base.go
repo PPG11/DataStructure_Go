@@ -194,7 +194,8 @@ func (T *GMatrix) RemoveVertex(i int) interface{} {
 	return vBak
 }
 
-func (T *GMatrix) BFS(v int, clock *int) {
+//一组bfs的连通域
+func (T *GMatrix) bfsAtom(v int, clock *int) {
 	var Q Queue.Queue
 	//入队时变为DISCOVERED
 	T.V[v].status = DISCOVERED
@@ -214,6 +215,55 @@ func (T *GMatrix) BFS(v int, clock *int) {
 			}
 		}
 		//全部考察完毕后变为VISITED
+		//*clock++
+		//T.V[vv].fTime = *clock
 		T.V[vv].status = VISITED
 	}
+}
+
+func (T *GMatrix) BFS(s int) {
+	T.reset()
+	clock := 0
+	T.bfsAtom(s, &clock)
+	for v := (s + 1) % T.n; s != v; v = (v + 1) % T.n {
+		if T.VStatus(v) == UNDISCOVERED {
+			T.bfsAtom(v, &clock)
+		}
+	}
+}
+
+func (T *GMatrix) reset() {
+	for i := 0; i < T.n; i++ {
+		T.V[i].status = UNDISCOVERED
+		for j := 0; j < T.n; j++ {
+			T.E[i][j].status = UNDETERMINED
+		}
+	}
+}
+
+//DFS
+func (T *GMatrix) dfsAtom(v int, clock *int) {
+	*clock++
+	T.V[v].dTime = *clock
+	T.V[v].status = DISCOVERED
+	for u := T.firstNbr(v); -1 < u; u = T.nextNbr(v, u) {
+		//根据u状态分别处理
+		switch T.VStatus(u) {
+		case UNDISCOVERED: //支撑树可进一步拓展
+			T.E[v][u].status = TREE
+			T.V[u].parent = v
+			T.dfsAtom(u, clock)
+		case DISCOVERED: //已被发现但是未访问完毕，即本case为后代指向祖先
+			T.E[v][u].status = BACKWARD
+		default: //u已访问完毕(VISITED 有向图) 根据继承关系选择前向边或者跨边 祖先指向后代
+			if T.DTime(v) < T.DTime(u) {
+				T.E[v][u].status = FORWARD
+			} else {
+				T.E[v][u].status = CROSS
+			}
+		}
+	}
+	T.V[v].status = VISITED
+	*clock++
+	T.V[v].fTime = *clock
 }
