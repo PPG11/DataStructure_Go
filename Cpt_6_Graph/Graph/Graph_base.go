@@ -1,6 +1,7 @@
 package Graph
 
 import (
+	"datastructure/DataStructure_Go/Cpt_4_StackAndQueue/Queue"
 	"math"
 )
 
@@ -191,4 +192,28 @@ func (T *GMatrix) RemoveVertex(i int) interface{} {
 	vBak := T.Vertex(i)
 	T.V = append(T.V[:i], T.V[i+1:]...)
 	return vBak
+}
+
+func (T *GMatrix) BFS(v int, clock *int) {
+	var Q Queue.Queue
+	//入队时变为DISCOVERED
+	T.V[v].status = DISCOVERED
+	Q.Enqueue(v)
+	for !Q.Empty() {
+		vv := Q.Dequeue().(int) //取出队首节点vv
+		*clock++
+		T.V[vv].dTime = *clock                                  //加注时间标签
+		for u := T.firstNbr(vv); -1 < u; u = T.nextNbr(vv, u) { //考察vv的每个邻居u
+			if T.VStatus(u) == UNDISCOVERED { //如果u没发现
+				T.V[u].status = DISCOVERED //则发现新顶点u
+				Q.Enqueue(u)               //新顶点u入队
+				T.E[vv][u].status = TREE   //vv到u的连线作为查找树的树边
+				T.V[u].parent = vv         //u在查找方向上的父节点改为vv
+			} else {
+				T.E[vv][u].status = CROSS //边(vv, u)归类为跨边
+			}
+		}
+		//全部考察完毕后变为VISITED
+		T.V[vv].status = VISITED
+	}
 }
