@@ -40,9 +40,9 @@ type EStatus uint8
 const (
 	UNDETERMINED EStatus = 0
 	TREE         EStatus = 1
-	CROSS        EStatus = 2
-	FORWARD      EStatus = 3
-	BACKWARD     EStatus = 4
+	CROSS        EStatus = 2 //表亲关系
+	FORWARD      EStatus = 3 //祖先指后代
+	BACKWARD     EStatus = 4 //后代指祖先
 )
 
 type Edge struct {
@@ -267,3 +267,24 @@ func (T *GMatrix) dfsAtom(v int, clock *int) {
 	*clock++
 	T.V[v].fTime = *clock
 }
+
+func (T *GMatrix) DFS(s int) {
+	T.reset()
+	clock := 0
+	T.dfsAtom(s, &clock)
+	for v := (s + 1) % T.n; s != v; v = (v + 1) % T.n {
+		if T.VStatus(v) == UNDISCOVERED {
+			T.dfsAtom(v, &clock)
+		}
+	}
+}
+
+/*
+顶点活跃期 active[u] = (dTime[u], fTime[u])
+
+嵌套引理 Parenthesis Lemma: 给定有向图 G = (V, E) 及一个 DFS 森林 则
+1. u是v的后代  iff  active[u] 包含于 active[v]
+2. u是v的祖先  iff  active[u]  包含  active[v]
+3. u与v"无关"  iff  active[u] 交 active[v] = 空
+4. u v 表亲   iff  active[u] 交 active[v] != 空 且互相不包含
+*/
