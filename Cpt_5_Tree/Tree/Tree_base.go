@@ -8,9 +8,9 @@ import (
 type BinNodePosi = *BinNode
 
 type BinNode struct {
-	parent, lChild, rChild *BinNode
-	data                   interface{}
-	height                 int
+	Parent, LChild, RChild *BinNode
+	Data                   interface{}
+	Height                 int
 }
 
 type BinTree struct {
@@ -22,24 +22,28 @@ type BinTree struct {
 //后代规模数
 func (T *BinNode) Size() int {
 	s := 1
-	if T.lChild != nil {
-		s += T.lChild.Size()
+	if T.LChild != nil {
+		s += T.LChild.Size()
 	}
-	if T.rChild != nil {
-		s += T.rChild.Size()
+	if T.RChild != nil {
+		s += T.RChild.Size()
 	}
 	return s
 }
 
+func (T *BinNode) GetData() interface{} {
+	return T.Data
+}
+
 func (T *BinNode) InsertAsLC(e interface{}) BinNodePosi {
-	newNode := BinNode{parent: T, data: e}
-	T.lChild = &newNode
+	newNode := BinNode{Parent: T, Data: e}
+	T.LChild = &newNode
 	return &newNode
 }
 
 func (T *BinNode) InsertAsRC(e interface{}) BinNodePosi {
-	newNode := BinNode{parent: T, data: e}
-	T.rChild = &newNode
+	newNode := BinNode{Parent: T, Data: e}
+	T.RChild = &newNode
 	return &newNode
 }
 
@@ -50,8 +54,8 @@ func (T *BinNode) InsertAsRC(e interface{}) BinNodePosi {
 //virtual
 //更新x的高度
 func (T *BinTree) updateHeight(x BinNodePosi) int {
-	x.height = 1 + max(x.lChild.stature(), x.rChild.stature())
-	return x.height
+	x.Height = 1 + max(x.LChild.stature(), x.RChild.stature())
+	return x.Height
 }
 
 func max(a, b int) int {
@@ -65,14 +69,14 @@ func (T *BinNode) stature() int {
 	if T == nil {
 		return -1
 	}
-	return T.height
+	return T.Height
 }
 
 //更新x及祖先的高度
 func (T *BinTree) updateHeightAbove(x BinNodePosi) {
 	for x != nil { //可以优化: 高度未变即可终止
 		T.updateHeight(x)
-		x = x.parent
+		x = x.Parent
 	}
 }
 
@@ -97,14 +101,14 @@ func (T *BinTree) InsertAsRC(x BinNodePosi, e interface{}) BinNodePosi {
 	T._size++
 	x.InsertAsRC(e)
 	T.updateHeightAbove(x)
-	return x.rChild
+	return x.RChild
 }
 
 func (T *BinTree) InsertAsLC(x BinNodePosi, e interface{}) BinNodePosi {
 	T._size++
 	x.InsertAsLC(e)
 	T.updateHeightAbove(x)
-	return x.lChild
+	return x.LChild
 }
 
 /* -- 遍历 -- */
@@ -113,9 +117,9 @@ func (T *BinTree) TraversePre(x BinNodePosi, visit func(interface{})) {
 	if x == nil {
 		return
 	}
-	visit(x.data)
-	T.TraversePre(x.lChild, visit)
-	T.TraversePre(x.rChild, visit)
+	visit(x.Data)
+	T.TraversePre(x.LChild, visit)
+	T.TraversePre(x.RChild, visit)
 }
 
 //先序 迭代形式1
@@ -127,14 +131,14 @@ func (T *BinTree) TravPreI1(x BinNodePosi, visit func(interface{})) {
 	}
 	for !S.Empty() {
 		x = S.Pop().(BinNodePosi)
-		visit(x.data)
+		visit(x.Data)
 		//右孩子先入后出
-		if x.rChild != nil {
-			S.Push(x.rChild)
+		if x.RChild != nil {
+			S.Push(x.RChild)
 		}
 		//左孩子后入先出
-		if x.lChild != nil {
-			S.Push(x.lChild)
+		if x.LChild != nil {
+			S.Push(x.LChild)
 		}
 		//注意上面两个次序
 	}
@@ -143,9 +147,9 @@ func (T *BinTree) TravPreI1(x BinNodePosi, visit func(interface{})) {
 //先序 迭代形式2 最终形式
 func (T *BinTree) visitAlongLeftBranch(x BinNodePosi, visit func(interface{}), S *Stack.Stack) {
 	for x != nil {
-		visit(x.data)
-		S.Push(x.rChild)
-		x = x.lChild
+		visit(x.Data)
+		S.Push(x.RChild)
+		x = x.LChild
 	}
 }
 
@@ -166,16 +170,16 @@ func (T *BinTree) TraverseIn(x BinNodePosi, visit func(interface{})) {
 	if x == nil {
 		return
 	}
-	T.TraverseIn(x.lChild, visit)
-	visit(x.data)
-	T.TraverseIn(x.rChild, visit)
+	T.TraverseIn(x.LChild, visit)
+	visit(x.Data)
+	T.TraverseIn(x.RChild, visit)
 }
 
 //中序 迭代形式
 func (T *BinTree) goAlongLeftBranch(x BinNodePosi, S *Stack.Stack) {
 	for x != nil {
 		S.Push(x)
-		x = x.lChild
+		x = x.LChild
 	}
 }
 
@@ -187,8 +191,8 @@ func (T *BinTree) TravInI(x BinNodePosi, visit func(interface{})) {
 			break
 		}
 		x = S.Pop().(BinNodePosi)
-		visit(x.data)
-		x = x.rChild
+		visit(x.Data)
+		x = x.RChild
 	}
 }
 
@@ -198,22 +202,22 @@ func (T *BinTree) TraversePost(x BinNodePosi, visit func(interface{})) {
 	if x == nil {
 		return
 	}
-	T.TraversePost(x.lChild, visit)
-	T.TraversePost(x.rChild, visit)
-	visit(x.data)
+	T.TraversePost(x.LChild, visit)
+	T.TraversePost(x.RChild, visit)
+	visit(x.Data)
 }
 
 //后序 迭代形式
 func (T *BinTree) gotoHLVFL(S *Stack.Stack) {
 	for x := S.Top().(BinNodePosi); x != nil; {
 		switch {
-		case (x.lChild != nil) && (x.rChild != nil):
-			S.Push(x.rChild)
-			S.Push(x.lChild)
-		case (x.lChild != nil) && (x.rChild == nil):
-			S.Push(x.lChild)
+		case (x.LChild != nil) && (x.RChild != nil):
+			S.Push(x.RChild)
+			S.Push(x.LChild)
+		case (x.LChild != nil) && (x.RChild == nil):
+			S.Push(x.LChild)
 		default:
-			S.Push(x.rChild)
+			S.Push(x.RChild)
 		}
 		x = S.Top().(BinNodePosi)
 	}
@@ -226,11 +230,11 @@ func (T *BinTree) TravPostI(x BinNodePosi, visit func(interface{})) {
 		S.Push(x)
 	}
 	for !S.Empty() {
-		if S.Top().(BinNodePosi) != x.parent {
+		if S.Top().(BinNodePosi) != x.Parent {
 			T.gotoHLVFL(&S)
 		}
 		x = S.Pop().(BinNodePosi)
-		visit(x.data)
+		visit(x.Data)
 	}
 }
 
@@ -241,12 +245,12 @@ func (T *BinTree) TravLevel(visit func(interface{})) {
 	Q.Enqueue(T._root)
 	for !Q.Empty() {
 		x = Q.Dequeue().(BinNodePosi)
-		visit(x.data)
-		if x.lChild != nil {
-			Q.Enqueue(x.lChild)
+		visit(x.Data)
+		if x.LChild != nil {
+			Q.Enqueue(x.LChild)
 		}
-		if x.rChild != nil {
-			Q.Enqueue(x.rChild)
+		if x.RChild != nil {
+			Q.Enqueue(x.RChild)
 		}
 	}
 }
