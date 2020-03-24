@@ -272,3 +272,37 @@ func (T *BinTree) TravLevel(visit func(interface{})) {
 		}
 	}
 }
+
+//一些基础方法
+func (T *BinTree) IsRoot(x BinNodePosi) bool {
+	if x.Parent == nil {
+		return true
+	}
+	return false
+}
+
+func (T *BinTree) IsLChild(x BinNodePosi) bool {
+	if (!T.IsRoot(x)) && (x == x.Parent.LChild) {
+		return true
+	}
+	return false
+}
+
+func (T *BinTree) IsRChild(x BinNodePosi) bool {
+	if (!T.IsRoot(x)) && (x == x.Parent.RChild) {
+		return true
+	}
+	return false
+}
+
+//来自父亲的饮用
+func (T *BinTree) FromParentTo(x BinNodePosi) BinNodePosi {
+	switch {
+	case T.IsRoot(x):
+		return T._root
+	case T.IsLChild(x):
+		return x.Parent.LChild
+	default:
+		return x.Parent.RChild
+	}
+}
