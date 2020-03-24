@@ -72,7 +72,7 @@ func (T *BinNode) Succ() BinNodePosi {
 //virtual
 //更新x的高度
 func (T *BinTree) UpdateHeight(x BinNodePosi) int {
-	x.Height = 1 + max(x.LChild.stature(), x.RChild.stature())
+	x.Height = 1 + max(x.LChild.Stature(), x.RChild.Stature())
 	return x.Height
 }
 
@@ -83,7 +83,7 @@ func max(a, b int) int {
 	return b
 }
 
-func (T *BinNode) stature() int {
+func (T *BinNode) Stature() int {
 	if T == nil {
 		return -1
 	}
