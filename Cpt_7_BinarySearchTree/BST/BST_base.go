@@ -182,13 +182,37 @@ func (T *AVL) Insert(e int) Tree.BinNodePosi {
 	for g := x.Parent; g != nil; g = g.Parent {
 		if !T.AvlBalanced(g) {
 			// 发现失衡则调节
-
+			//T.FromParentTo(g) = T.rotateAt(T.tallerChild(T.tallerChild(g)))
+			*g = *T.rotateAt(T.tallerChild(T.tallerChild(g)))
 			break
 		} else { //否则代表没失衡
 			T.UpdateHeight(g)
 		}
 	}
 	return x
+}
+
+func (T *AVL) Remove(e int) bool {
+	var isLeft *bool
+	x := T.Search(e, isLeft)
+	if x == nil {
+		return false
+	} //如果目标不存在
+
+	//如果找到目标
+	T.removeAt(x, isLeft)
+	T.SizeAdd(-1)
+
+	//以下 从hot向上检查
+	for g := T._hot; g != nil; g = g.Parent {
+		if !T.AvlBalanced(g) {
+			*g = *T.rotateAt(T.tallerChild(T.tallerChild(g)))
+			//T.FromParentTo(g) = T.rotateAt(T.tallerChild(T.tallerChild(g)))
+			//g = T.FromParentTo(g)
+		}
+		T.UpdateHeight(g)
+	}
+	return true
 }
 
 func (T *AVL) tallerChild(x Tree.BinNodePosi) Tree.BinNodePosi {
@@ -301,4 +325,54 @@ func (T *AVL) zagzig(g Tree.BinNodePosi) {
 	p.Parent = g
 
 	*g = *v
+}
+
+func (T *AVL) rotateAt(v Tree.BinNodePosi) Tree.BinNodePosi {
+	p := v.Parent
+	g := p.Parent
+	switch {
+	case T.IsLChild(p) && T.IsLChild(v): //zig-zig
+		p.Parent = g.Parent
+		return T.connect34(v, p, g, v.LChild, v.RChild, p.RChild, g.RChild)
+	case T.IsLChild(p) && !T.IsLChild(v): //zig-zag
+		v.Parent = g.Parent
+		return T.connect34(p, v, g, p.LChild, v.LChild, v.RChild, g.RChild)
+	case !T.IsLChild(p) && T.IsLChild(v): //zag-zig
+		v.Parent = g.Parent
+		return T.connect34(g, v, p, g.LChild, v.LChild, v.RChild, p.RChild)
+	//case !T.IsLChild(p) && !T.IsLChild(v): //zag-zag
+	default:
+		p.Parent = g.Parent
+		return T.connect34(g, p, v, g.LChild, p.LChild, v.LChild, v.RChild)
+	}
+}
+
+func (T *AVL) connect34(a, b, c, T0, T1, T2, T3 Tree.BinNodePosi) Tree.BinNodePosi {
+	a.LChild = T0
+	if T0 != nil {
+		T0.Parent = a
+	}
+	a.RChild = T1
+	if T1 != nil {
+		T1.Parent = a
+	}
+	T.UpdateHeight(a)
+
+	c.LChild = T2
+	if T2 != nil {
+		T2.Parent = c
+	}
+	c.RChild = T3
+	if T3 != nil {
+		T3.Parent = c
+	}
+	T.UpdateHeight(c)
+
+	b.LChild = a
+	a.Parent = b
+
+	b.RChild = c
+	c.Parent = b
+	T.UpdateHeight(b)
+	return b
 }
