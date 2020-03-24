@@ -31,6 +31,10 @@ func (T *BinNode) Size() int {
 	return s
 }
 
+func (T *BinTree) SizeAdd(i int) {
+	T._size += i
+}
+
 func (T *BinNode) GetData() interface{} {
 	return T.Data
 }
@@ -48,12 +52,26 @@ func (T *BinNode) InsertAsRC(e interface{}) BinNodePosi {
 }
 
 //(中序遍历意义下)当前节点的直接后继
-//func (T *BinNode) Succ() BinNodePosi {}
+func (T *BinNode) Succ() BinNodePosi {
+	s := T
+	if T.RChild != nil {
+		s = T.RChild
+		for s.LChild != nil {
+			s = s.LChild
+		}
+	} else {
+		for s.Parent.RChild == s {
+			s = s.Parent
+		}
+		s = s.Parent
+	}
+	return s
+}
 
 /* --------- BinTree 方法 --------- */
 //virtual
 //更新x的高度
-func (T *BinTree) updateHeight(x BinNodePosi) int {
+func (T *BinTree) UpdateHeight(x BinNodePosi) int {
 	x.Height = 1 + max(x.LChild.stature(), x.RChild.stature())
 	return x.Height
 }
@@ -73,9 +91,9 @@ func (T *BinNode) stature() int {
 }
 
 //更新x及祖先的高度
-func (T *BinTree) updateHeightAbove(x BinNodePosi) {
+func (T *BinTree) UpdateHeightAbove(x BinNodePosi) {
 	for x != nil { //可以优化: 高度未变即可终止
-		T.updateHeight(x)
+		T.UpdateHeight(x)
 		x = x.Parent
 	}
 }
@@ -100,14 +118,14 @@ func (T *BinTree) Root() BinNodePosi {
 func (T *BinTree) InsertAsRC(x BinNodePosi, e interface{}) BinNodePosi {
 	T._size++
 	x.InsertAsRC(e)
-	T.updateHeightAbove(x)
+	T.UpdateHeightAbove(x)
 	return x.RChild
 }
 
 func (T *BinTree) InsertAsLC(x BinNodePosi, e interface{}) BinNodePosi {
 	T._size++
 	x.InsertAsLC(e)
-	T.updateHeightAbove(x)
+	T.UpdateHeightAbove(x)
 	return x.LChild
 }
 
