@@ -114,6 +114,10 @@ func (T *BinTree) Root() BinNodePosi {
 	return T._root
 }
 
+func (T *BinTree) SetRoot(x BinNodePosi) {
+	T._root = x
+}
+
 /* -- 子树接入删除和分离 -- */
 func (T *BinTree) InsertAsRC(x BinNodePosi, e interface{}) BinNodePosi {
 	T._size++
@@ -295,7 +299,27 @@ func (T *BinTree) IsRChild(x BinNodePosi) bool {
 	return false
 }
 
-//来自父亲的饮用
+func (T *BinTree) AttachAsLC(x BinNodePosi, S BinNodePosi) BinNodePosi {
+	x.LChild = S
+	if x.LChild != nil {
+		x.LChild.Parent = x
+	}
+	T.SizeAdd(S.Size())
+	T.UpdateHeight(x)
+	return x
+}
+
+func (T *BinTree) AttachAsRC(x BinNodePosi, S BinNodePosi) BinNodePosi {
+	x.RChild = S
+	if x.RChild != nil {
+		x.RChild.Parent = x
+	}
+	T.SizeAdd(S.Size())
+	T.UpdateHeight(x)
+	return x
+}
+
+//来自父亲的引用
 func (T *BinTree) FromParentTo(x BinNodePosi) BinNodePosi {
 	switch {
 	case T.IsRoot(x):
