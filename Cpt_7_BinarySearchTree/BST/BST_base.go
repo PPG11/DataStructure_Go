@@ -1,6 +1,8 @@
 package BST
 
-import "datastructure/DataStructure_Go/Cpt_5_Tree/Tree"
+import (
+	"datastructure/DataStructure_Go/Cpt_5_Tree/Tree"
+)
 
 /*
 BST中序遍历 单调非降
@@ -136,8 +138,9 @@ func (T *BST) removeAt(x Tree.BinNodePosi, isLeft *bool) Tree.BinNodePosi {
 	return succ
 }
 
-/* ----- AVL ----- */
-
+/* ------------------------- */
+/* ---------- AVL ---------- */
+/* ------------------------- */
 func (T *BST) Balanced(x Tree.BinNodePosi) bool { //理想平衡
 	return x.LChild.Stature() == x.RChild.Stature()
 }
@@ -156,8 +159,6 @@ type AVL struct {
 
 //一个节点的插入会引起有可能所有的祖先失衡
 //一个节点的删除最多引起该节点的 parent 一个节点的失衡
-
-//func (T *AVL) Search(x int) {}
 
 func (T *AVL) Insert(e int) Tree.BinNodePosi {
 	var isLeft *bool
@@ -375,4 +376,145 @@ func (T *AVL) connect34(a, b, c, T0, T1, T2, T3 Tree.BinNodePosi) Tree.BinNodePo
 	c.Parent = b
 	T.UpdateHeight(b)
 	return b
+}
+
+/* --------------------------- */
+/* ---------- splay ---------- */
+/* --------------------------- */
+type Splay struct {
+	BST
+}
+
+func (T *Splay) TreeSplay(v Tree.BinNodePosi) Tree.BinNodePosi {
+	if v != nil {
+		return nil
+	}
+	var p, g Tree.BinNodePosi
+	p = v.Parent
+	g = p.Parent
+
+	for p != nil && g != nil {
+		gg := g.Parent
+		switch {
+		case T.IsLChild(v) && T.IsLChild(p):
+			//zig-zig
+			T.AttachAsLC(g, p.RChild)
+			T.AttachAsLC(p, v.RChild)
+			T.AttachAsRC(p, g)
+			T.AttachAsRC(v, p)
+		case T.IsLChild(v) && !T.IsLChild(p):
+			//zig-zag
+			T.AttachAsRC(g, v.RChild)
+			T.AttachAsLC(p, v.RChild)
+			T.AttachAsLC(v, g)
+			T.AttachAsRC(v, p)
+		case !T.IsLChild(v) && T.IsLChild(p):
+			//zag-zig
+			T.AttachAsLC(g, v.RChild)
+			T.AttachAsRC(p, v.LChild)
+			T.AttachAsLC(v, p)
+			T.AttachAsRC(v, g)
+		//case !T.IsLChild(v) && !T.IsLChild(p):
+		default:
+			//zag-zag
+			T.AttachAsLC(g, p.LChild)
+			T.AttachAsRC(p, v.LChild)
+			T.AttachAsLC(p, g)
+			T.AttachAsLC(v, p)
+		}
+		if gg == nil {
+			v.Parent = nil
+		} else {
+			if g == gg.LChild {
+				T.AttachAsLC(gg, v)
+			} else {
+				T.AttachAsRC(gg, v)
+			}
+		}
+		T.UpdateHeight(g)
+		T.UpdateHeight(p)
+		T.UpdateHeight(v)
+
+		p = v.Parent
+		g = p.Parent
+	}
+	if p != nil {
+		//如果 p 是根 即需要单旋
+		if T.IsLChild(v) {
+			T.AttachAsLC(p, v.RChild)
+			T.AttachAsRC(v, p)
+		} else {
+			T.AttachAsRC(p, v.LChild)
+			T.AttachAsLC(v, p)
+		}
+	}
+	v.Parent = nil
+	return v
+}
+
+func (T *Splay) Search(e int) Tree.BinNodePosi {
+	var isLeft *bool
+	p := T.searchIn(T.Root(), e, isLeft)
+	if p != nil {
+		T.SetRoot(T.TreeSplay(p))
+	} else {
+		T.SetRoot(T.TreeSplay(T._hot))
+	}
+	return T.Root()
+}
+
+func (T *Splay) Insert(e int) Tree.BinNodePosi {
+	t := T.Search(e)
+
+	if t.Data.(int) == e {
+		return t
+	} //找到该 key 无法插入
+
+	//如果没找到 key 则创建并插入
+	var x Tree.BinNodePosi
+	x.Data = e
+
+	if e > t.Data.(int) {
+		T.AttachAsRC(x, t.RChild)
+		T.AttachAsLC(x, t)
+		t.RChild = nil
+	} else {
+		T.AttachAsLC(x, t.LChild)
+		T.AttachAsRC(x, t)
+		t.LChild = nil
+	}
+	T.SetRoot(x)
+	return x
+}
+
+func (T *Splay) Remove(e int) bool {
+	if T.Root() == nil || e != T.Search(e).Data.(int) {
+		return false
+	}
+	w := T.Root()
+	switch {
+	case T.Root().LChild == nil:
+		T.SetRoot(T.Root().RChild)
+		if T.Root() != nil {
+			T.Root().Parent = nil
+		}
+	case T.Root().RChild == nil:
+		T.SetRoot(T.Root().LChild)
+		if T.Root() != nil {
+			T.Root().Parent = nil
+		}
+	default:
+		lTree := T.Root().LChild
+		lTree.Parent = nil
+		T.SetRoot(T.Root().RChild)
+		T.Root().Parent = nil
+		T.Search(w.Data.(int))
+		T.Root().LChild = lTree
+		lTree.Parent = T.Root()
+	}
+	T.SizeAdd(-1)
+	if T.Root() != nil {
+		T.UpdateHeight(T.Root())
+	}
+	return true
 }
