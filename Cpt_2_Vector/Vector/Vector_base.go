@@ -105,7 +105,11 @@ func (T *Vector) findLH(e interface{}, lo Rank, hi Rank) Rank {
 	// 交给上层算法判断
 }
 
-func (T *Vector) Search(e interface{}, lo Rank, hi Rank) Rank {
+func (T *Vector) Search(e interface{}) Rank {
+	return T.SearchLH(e, 0, T._size)
+}
+
+func (T *Vector) SearchLH(e interface{}, lo Rank, hi Rank) Rank {
 	rand.Seed(time.Now().UnixNano())
 	if rand.Intn(2) == 0 {
 		return T.binSearch(e, lo, hi)
