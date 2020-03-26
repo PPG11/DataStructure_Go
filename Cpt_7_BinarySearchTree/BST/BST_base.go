@@ -31,6 +31,14 @@ type BST struct {
 	_hot Tree.BinNodePosi
 }
 
+func (T *BST) Hot() Tree.BinNodePosi {
+	return T._hot
+}
+
+func (T *BST) SetHot(x Tree.BinNodePosi) {
+	T._hot = x
+}
+
 func (T *BST) Search(e key, isLeft *bool) Tree.BinNodePosi {
 	T._hot = nil
 	return T.searchIn(T.Root(), e, isLeft)
@@ -98,13 +106,13 @@ func (T *BST) Remove(e int) bool {
 	if x == nil {
 		return false
 	}
-	T.removeAt(x, isLeft)
+	T.RemoveAt(x, isLeft)
 	T.SizeAdd(-1)
 	T.UpdateHeightAbove(T._hot)
 	return true
 }
 
-func (T *BST) removeAt(x Tree.BinNodePosi, isLeft *bool) Tree.BinNodePosi {
+func (T *BST) RemoveAt(x Tree.BinNodePosi, isLeft *bool) Tree.BinNodePosi {
 	//w := x
 	var succ Tree.BinNodePosi = nil
 	switch {
@@ -183,8 +191,8 @@ func (T *AVL) Insert(e int) Tree.BinNodePosi {
 	for g := x.Parent; g != nil; g = g.Parent {
 		if !T.AvlBalanced(g) {
 			// 发现失衡则调节
-			//T.FromParentTo(g) = T.rotateAt(T.tallerChild(T.tallerChild(g)))
-			*g = *T.rotateAt(T.tallerChild(T.tallerChild(g)))
+			//T.FromParentTo(g) = T.RotateAt(T.tallerChild(T.tallerChild(g)))
+			*g = *T.RotateAt(T.tallerChild(T.tallerChild(g)))
 			break
 		} else { //否则代表没失衡
 			T.UpdateHeight(g)
@@ -201,14 +209,14 @@ func (T *AVL) Remove(e int) bool {
 	} //如果目标不存在
 
 	//如果找到目标
-	T.removeAt(x, isLeft)
+	T.RemoveAt(x, isLeft)
 	T.SizeAdd(-1)
 
 	//以下 从hot向上检查
 	for g := T._hot; g != nil; g = g.Parent {
 		if !T.AvlBalanced(g) {
-			*g = *T.rotateAt(T.tallerChild(T.tallerChild(g)))
-			//T.FromParentTo(g) = T.rotateAt(T.tallerChild(T.tallerChild(g)))
+			*g = *T.RotateAt(T.tallerChild(T.tallerChild(g)))
+			//T.FromParentTo(g) = T.RotateAt(T.tallerChild(T.tallerChild(g)))
 			//g = T.FromParentTo(g)
 		}
 		T.UpdateHeight(g)
@@ -328,7 +336,7 @@ func (T *AVL) zagzig(g Tree.BinNodePosi) {
 	*g = *v
 }
 
-func (T *AVL) rotateAt(v Tree.BinNodePosi) Tree.BinNodePosi {
+func (T *BST) RotateAt(v Tree.BinNodePosi) Tree.BinNodePosi {
 	p := v.Parent
 	g := p.Parent
 	switch {
@@ -348,7 +356,7 @@ func (T *AVL) rotateAt(v Tree.BinNodePosi) Tree.BinNodePosi {
 	}
 }
 
-func (T *AVL) connect34(a, b, c, T0, T1, T2, T3 Tree.BinNodePosi) Tree.BinNodePosi {
+func (T *BST) connect34(a, b, c, T0, T1, T2, T3 Tree.BinNodePosi) Tree.BinNodePosi {
 	a.LChild = T0
 	if T0 != nil {
 		T0.Parent = a
