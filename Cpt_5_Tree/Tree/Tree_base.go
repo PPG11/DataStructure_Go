@@ -5,12 +5,20 @@ import (
 	"datastructure/DataStructure_Go/Cpt_4_StackAndQueue/Stack"
 )
 
+type RBColor = bool
+
+const (
+	RBBLACK RBColor = true
+	RBRED   RBColor = false
+)
+
 type BinNodePosi = *BinNode
 
 type BinNode struct {
 	Parent, LChild, RChild *BinNode
 	Data                   interface{}
 	Height                 int
+	Color                  RBColor
 }
 
 type BinTree struct {
@@ -328,5 +336,21 @@ func (T *BinTree) FromParentTo(x BinNodePosi) BinNodePosi {
 		return x.Parent.LChild
 	default:
 		return x.Parent.RChild
+	}
+}
+
+func (T *BinTree) Uncle(x BinNodePosi) BinNodePosi {
+	if p := x.Parent; T.IsLChild(p) {
+		return p.Parent.RChild
+	} else {
+		return p.Parent.LChild
+	}
+}
+
+func (T *BinTree) Sibling(x BinNodePosi) BinNodePosi {
+	if T.IsLChild(x) {
+		return x.Parent.RChild
+	} else {
+		return x.Parent.LChild
 	}
 }
