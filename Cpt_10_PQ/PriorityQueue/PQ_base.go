@@ -157,8 +157,7 @@ func (T *PQLeftHeap) Merge(a, b Tree.BinNodePosi) Tree.BinNodePosi {
 }
 
 func (T *PQLeftHeap) Insert(e interface{}) {
-	var v *Tree.BinNode
-	v.Data = e
+	v := &Tree.BinNode{Data: e}
 	T.SetRoot(T.Merge(T.Root(), v))
 	T.SizeAdd(1)
 }
