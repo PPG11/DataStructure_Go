@@ -72,12 +72,12 @@ func (T *PQ) GetMax() int {
 	return T.Get(0).(int)
 }
 
-func (T *PQComplHeap) InsertHeap(e interface{}) {
+func (T *PQ) InsertHeap(e interface{}) {
 	T.InsertEnd(e)
 	T.percolateUp(T.Size() - 1)
 }
 
-func (T *PQComplHeap) percolateUp(i Vector.Rank) Vector.Rank {
+func (T *PQ) percolateUp(i Vector.Rank) Vector.Rank {
 	for T.ParentValid(i) {
 		if j := T.Parent(i); T.Get(i).(int) < T.Get(j).(int) {
 			break
@@ -97,7 +97,7 @@ func (T *PQ) DelMax() interface{} {
 	return maxElem
 }
 
-func (T *PQComplHeap) percolateDown(i Vector.Rank) Vector.Rank {
+func (T *PQ) percolateDown(i Vector.Rank) Vector.Rank {
 	j := T.ProperParent(i)
 	for i != j {
 		T.Swap(i, j)
