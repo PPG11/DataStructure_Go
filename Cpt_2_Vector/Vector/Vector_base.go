@@ -46,20 +46,24 @@ func (T *Vector) Vector(c int, s int, v interface{}) {
 	}
 }
 
-func (T *Vector) VectorCopyN(A []interface{}, n Rank) {
-	T.copyFrom(A, 0, n)
+//func (T *Vector) VectorCopy(A Vector, n Rank) {
+//	T.CopyFrom(A._elem, 0, n)
+//}
+
+func (T *Vector) VectorCopyN(A Vector, n Rank) {
+	T.CopyFrom(A._elem, 0, n)
 }
 
-func (T *Vector) VectorCopyLH(A []interface{}, lo Rank, hi Rank) {
-	T.copyFrom(A, lo, hi)
+func (T *Vector) VectorCopyLH(A Vector, lo Rank, hi Rank) {
+	T.CopyFrom(A._elem, lo, hi)
 }
 
-func (T *Vector) VectorCopyVector(V Vector) {
-	T.copyFrom(V._elem, 0, V._size)
+func (T *Vector) CopyWholeVector(V Vector) {
+	T.CopyFrom(V._elem, 0, V._size)
 }
 
-func (T *Vector) VectorCopyVectorLH(V Vector, lo Rank, hi Rank) {
-	T.copyFrom(V._elem, lo, hi)
+func (T *Vector) CopyVectorLH(V Vector, lo Rank, hi Rank) {
+	T.CopyFrom(V._elem, lo, hi)
 }
 
 /* ----- Read Only Interface ----- */
@@ -267,7 +271,7 @@ func (T *Vector) Uniquify() int {
 }
 
 /* ----- Protected Interface ----- */
-func (T *Vector) copyFrom(A []interface{}, lo Rank, hi Rank) {
+func (T *Vector) CopyFrom(A []interface{}, lo Rank, hi Rank) {
 	T._elem = make([]interface{}, 2*(hi-lo))
 	T._size = 0
 	for lo < hi {
