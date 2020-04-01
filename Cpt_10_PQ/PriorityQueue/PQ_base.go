@@ -131,3 +131,46 @@ type PQLeftHeap struct {
 	PQ
 	Tree.BinTree
 }
+
+//合并
+func (T *PQLeftHeap) Merge(a, b Tree.BinNodePosi) Tree.BinNodePosi {
+	if a == nil {
+		return b
+	}
+	if b == nil {
+		return a
+	}
+	if a.Data.(int) < b.Data.(int) {
+		*a, *b = *b, *a
+	}
+	a.RChild = T.Merge(a.RChild, b)
+	a.RChild.Parent = a
+	if a.RChild == nil || a.LChild.Npl < a.RChild.Npl {
+		*a.LChild, *a.RChild = *a.RChild, *a.LChild
+	}
+	if a.RChild != nil {
+		a.Npl = a.RChild.Npl + 1
+	} else {
+		a.Npl = 1
+	}
+	return a
+}
+
+func (T *PQLeftHeap) Insert(e interface{}) {
+	var v *Tree.BinNode
+	v.Data = e
+	T.SetRoot(T.Merge(T.Root(), v))
+	T.SizeAdd(1)
+}
+
+func (T *PQLeftHeap) DelMax() interface{} {
+	lHeap := T.Root().LChild
+	rHeap := T.Root().RChild
+	e := T.Root().Data
+	T.SizeAdd(-1)
+	T.SetRoot(T.Merge(lHeap, rHeap))
+	if T.Root() != nil {
+		T.Root().Parent = nil
+	}
+	return e
+}

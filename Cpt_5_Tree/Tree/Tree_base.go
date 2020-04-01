@@ -19,6 +19,7 @@ type BinNode struct {
 	Data                   interface{}
 	Height                 int
 	Color                  RBColor
+	Npl                    int
 }
 
 type BinTree struct {
