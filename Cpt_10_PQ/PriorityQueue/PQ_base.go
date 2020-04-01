@@ -109,7 +109,7 @@ func (T *PQ) percolateDown(i Vector.Rank) Vector.Rank {
 
 func (T *PQComplHeap) HeapCopy(A PQComplHeap, n Vector.Rank) {
 	T.VectorCopyN(A.Vector, n)
-	T.heapify(n)
+	T.heapify()
 }
 
 func (T *PQComplHeap) heapifyBad(n Vector.Rank) {
@@ -119,7 +119,7 @@ func (T *PQComplHeap) heapifyBad(n Vector.Rank) {
 	}
 }
 
-func (T *PQComplHeap) heapify(n Vector.Rank) {
+func (T *PQComplHeap) heapify() {
 	//Floyd
 	for i := T.LastInternal(); T.InHeap(i); i-- {
 		T.percolateDown(i)
