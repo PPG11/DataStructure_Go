@@ -1,6 +1,7 @@
 package Vector
 
 import (
+	"datastructure/DataStructure_Go/Cpt_10_PQ/PriorityQueue"
 	"math/rand"
 	"reflect"
 	"time"
@@ -386,7 +387,14 @@ func (T *Vector) mergeSort(lo Rank, hi Rank) {
 
 //func (T *Vector) quickSort(lo Rank, hi Rank) {}
 
-//func (T *Vector) heapSort(lo Rank, hi Rank) {}
+func (T *Vector) heapSort(lo Rank, hi Rank) {
+	var H PriorityQueue.PQComplHeap
+	H.CopyFrom(T._elem, lo, hi)
+	for !H.Empty() {
+		hi--
+		T._elem[hi] = H.DelMax()
+	}
+}
 
 /* ----- traverse ----- */
 
