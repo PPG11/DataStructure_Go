@@ -193,7 +193,7 @@ func (T *Vector) Insert(r Rank, e interface{}) {
 	T._elem = append(T._elem[:r], behindElem...)
 }
 
-func (T *Vector) insertEnd(e interface{}) {
+func (T *Vector) InsertEnd(e interface{}) {
 	T._size++
 	T.expand()
 	T._elem = append(T._elem, e)
@@ -398,4 +398,8 @@ func (T *Vector) Get(r Rank) interface{} {
 
 func (T *Vector) Put(r Rank, e interface{}) {
 	T._elem[r] = e
+}
+
+func (T *Vector) Swap(i, j Rank) {
+	T._elem[i], T._elem[j] = T._elem[j], T._elem[i]
 }
