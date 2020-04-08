@@ -82,3 +82,14 @@ func buildNext(P string) []int {
 	}
 	return N
 }
+
+func buildBC(P string) []int {
+	bc := make([]int, 256)
+	for j := 0; j < 256; j++ {
+		bc[j] = -1
+	}
+	for m, j := len(P), 0; j < m; j++ {
+		bc[int(P[j])] = j
+	}
+	return bc
+}
