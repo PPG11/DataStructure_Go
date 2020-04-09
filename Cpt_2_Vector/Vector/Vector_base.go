@@ -206,17 +206,17 @@ func (T *Vector) InsertEnd(e interface{}) {
 
 func (T *Vector) sortLH(lo Rank, hi Rank) {
 	rand.Seed(time.Now().UnixNano())
-	switch rand.Intn(2) {
+	switch rand.Intn(4) {
 	case 0:
 		T.bubbleSort(lo, hi)
 	case 1:
 		T.mergeSort(lo, hi)
-		//case 2:
-		//	T.selectionSort(lo, hi)
-		//case 3:
-		//	T.heapSort(lo, hi)
+	case 2:
+		T.heapSort(lo, hi)
+	case 3:
+		T.quickSort(lo, hi)
 		//default:
-		//	T.quickSort(lo, hi)
+		//T.selectionSort(lo, hi)
 	}
 }
 
@@ -388,6 +388,7 @@ func (T *Vector) partition1(lo Rank, hi Rank) Rank {
 }
 
 func (T *Vector) partition(lo Rank, hi Rank) Rank {
+	rand.Seed(time.Now().UnixNano())
 	T.Swap(lo, lo+rand.Intn(hi-lo)) //随即交换
 	pivot := T._elem[lo]
 	mi := lo
@@ -416,6 +417,68 @@ func (T *Vector) heapSort(lo Rank, hi Rank) {
 	for !H.Empty() {
 		hi--
 		T._elem[hi] = H.DelMax()
+	}
+}
+
+func (T *Vector) majority(maj interface{}) bool {
+	maj = T.majEleCandidate()
+	return T.majEleCheck(maj)
+}
+
+func (T *Vector) majEleCandidate() interface{} {
+	var maj interface{}
+	for c, i := 0, 0; i < T.Size(); i++ {
+		if c == 0 {
+			maj = T._elem[i]
+			c = 1
+		} else {
+			if maj == T._elem[i] {
+				c++
+			} else {
+				c--
+			}
+		}
+	}
+	return maj
+}
+
+func (T *Vector) majEleCheck(maj interface{}) bool {
+	var c int = 0
+	for i := 0; i < T.Size(); i++ {
+		if T._elem[i] == maj {
+			c++
+		} else {
+			c--
+		}
+	}
+	if c > 0 {
+		return true
+	} else {
+		return false
+	}
+}
+
+func (T *Vector) quickSelect(k Rank) {
+	for lo, hi := 0, T.Size()-1; lo < hi; {
+		i, j := lo, hi
+		pivot := T._elem[lo]
+		for i < j {
+			for i < j && pivot.(int) <= T._elem[j].(int) {
+				j--
+			}
+			T._elem[i] = T._elem[j]
+			for i < j && T._elem[j].(int) <= pivot.(int) {
+				i++
+			}
+			T._elem[j] = T._elem[i]
+		}
+		T._elem[i] = pivot
+		if k <= i {
+			hi = i - 1
+		}
+		if i <= k {
+			lo = i + 1
+		}
 	}
 }
 
