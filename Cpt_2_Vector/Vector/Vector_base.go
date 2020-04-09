@@ -347,18 +347,6 @@ func (T *Vector) merge(lo Rank, mi Rank, hi Rank) {
 	_ = copy(B, T._elem[lo:mi])
 	C := T._elem[mi:hi]
 
-	//for i, j, k := 0, 0, 0; (j < lb) || (k < lc); {
-	//	if (j < lb) && (lc <= k || B[j].(float64) <= C[k].(float64)) {
-	//		A[i] = B[j]
-	//		i++
-	//		j++
-	//	}
-	//	if (k < lc) && (lb <= j || C[k].(float64) < B[j].(float64)) {
-	//		A[i] = C[k]
-	//		i++
-	//		k++
-	//	}
-	//}
 	for i, j, k := 0, 0, 0; j < lb; {
 		if lc <= k || B[j].(float64) <= C[k].(float64) {
 			A[i] = B[j]
@@ -383,9 +371,44 @@ func (T *Vector) mergeSort(lo Rank, hi Rank) {
 	T.merge(lo, mi, hi)
 }
 
-//func (T *Vector) partition(lo Rank, hi Rank) Rank {}
+func (T *Vector) partition1(lo Rank, hi Rank) Rank {
+	pivot := T._elem[lo]
+	for lo+1 < hi {
+		for pivot.(int) <= T._elem[hi-1].(int) {
+			hi--
+		}
+		T._elem[lo] = T._elem[hi-1]
+		for T._elem[lo].(int) <= pivot.(int) {
+			lo++
+		}
+		T._elem[hi-1] = T._elem[lo]
+	}
+	T._elem[lo] = pivot
+	return lo
+}
 
-//func (T *Vector) quickSort(lo Rank, hi Rank) {}
+func (T *Vector) partition(lo Rank, hi Rank) Rank {
+	T.Swap(lo, lo+rand.Intn(hi-lo)) //随即交换
+	pivot := T._elem[lo]
+	mi := lo
+	for k := lo + 1; k <= hi; k++ {
+		if T._elem[k].(int) < pivot.(int) {
+			mi++
+			T.Swap(mi, k)
+		}
+	}
+	T.Swap(lo, mi)
+	return mi
+}
+
+func (T *Vector) quickSort(lo Rank, hi Rank) {
+	if hi-lo < 2 {
+		return
+	}
+	mi := T.partition(lo, hi-1)
+	T.quickSort(lo, mi)
+	T.quickSort(mi+1, hi)
+}
 
 func (T *Vector) heapSort(lo Rank, hi Rank) {
 	var H PriorityQueue.PQComplHeap
